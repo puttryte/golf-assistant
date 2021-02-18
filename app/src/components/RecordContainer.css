@@ -1,6 +1,6 @@
-.container {
+.recording {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   text-align: center;
   align-items: center;
   position: absolute;
@@ -10,18 +10,18 @@
   transform: translateY(-50%);
 }
 
-.container strong {
+.recording strong {
   font-size: 20px;
   line-height: 26px;
 }
 
-.container p {
+.recording p {
   font-size: 16px;
   line-height: 22px;
   color: #8c8c8c;
   margin: 0;
 }
 
-.container a {
+.recording a {
   text-decoration: none;
 }
