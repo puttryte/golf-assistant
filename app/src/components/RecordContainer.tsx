@@ -1,4 +1,4 @@
-import './ExploreContainer.css';
+import './RecordContainer.css';
 import { camera, trash, close } from 'ionicons/icons';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
     IonFab, IonFabButton, IonIcon, IonGrid, IonRow,
@@ -11,9 +11,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     const { doMediaCapture } = useMediaCapture();
   return (
     <div className="container">
-        START
         <IonFabButton onClick={() => doMediaCapture()}>
-            <IonIcon icon={camera}/>
+            START
         </IonFabButton>
     </div>
   );
