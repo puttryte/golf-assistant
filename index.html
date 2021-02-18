@@ -8,28 +8,60 @@
     </head>
     <body style="text-align: center">
         <div>
-            <canvas 
-            id="canv1" 
-            width="500" 
-            height="500" 
-            style= "
-                border:1px solid #000000;
-                "
-            ></canvas>
-            <canvas 
-                id="canv2" 
-                width="500" 
-                height="500" 
-                style= "
-                    border:1px solid #000000;
-                    "
-            ></canvas>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1 >Original Image</h1>
+                    <canvas 
+                    id="canv1" 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Isolated Channel</h1>
+                    <canvas 
+                    id="canv2" 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1 >Histogram of Isolated Channel</h1>
+                    <canvas 
+                    id="canv3" 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Split to Black and White</h1>
+                    <canvas 
+                    id="canv4" 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
         </div>
-        <div style = "text-align: center; display: inline-flex;">
-            <h1 id = "coordinates" style="display: inline-block; margin: 50px">TEST</h1>
-            <h1 id = "rgb" style="display: inline-block; margin: 50px">TEST</h1>
-            <h1 id = "cmyk" style="display: inline-block; margin: 50px">TEST</h1>
-            <h1 id = "hsv" style="display: inline-block; margin: 50px">TEST</h1>
+        <div style = "text-align: center; display: inline;">
+            <h1 id = "coordinates" style="display: inline-block; margin: 50px">Coordinates</h1>
+            <h1 id = "rgb" style="display: inline-block; margin: 50px">RGB</h1>
+            <h1 id = "cmyk" style="display: inline-block; margin: 50px">CMKY</h1>
+            <h1 id = "hsv" style="display: inline-block; margin: 50px">HSV</h1>
         </div>
     </body>
 </html>

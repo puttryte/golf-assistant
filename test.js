@@ -1,17 +1,20 @@
 var imgHeight;
 var imgWidth;
 
-var imgsrc = "./test.jpeg"; var scale = 0.9;
-//var imgsrc = "./test2.png"; var scale = 1.1;
-//var imgsrc = "./test3.jpg"; var scale = 1.2;
-//var imgsrc = "./test4.jpg"; var scale = 2.1;
-//var imgsrc = "./test5.jpg"; var scale = 1.1;
+var imgsrc = "./test.jpeg"; var scale = 1.5;
+//var imgsrc = "./test2.png"; var scale = 1.7;
+//var imgsrc = "./test3.jpg"; var scale = 2;
+//var imgsrc = "./test4.jpg"; var scale = 3.5;
+//var imgsrc = "./test5.jpg"; var scale = 1.7;
 
 
 function main()
 {
     var canv1 = document.querySelector('#canv1');
     var canv2 = document.querySelector('#canv2');
+    var canv3 = document.querySelector('#canv3');
+    var canv4 = document.querySelector('#canv4');
+
     var label = document.querySelector('label');
 
     var mouseY;
@@ -36,7 +39,9 @@ function main()
             
             document.getElementById('coordinates').innerHTML = 
                 " X: " + mouseX + 
-                "<br/> Y: " + mouseY;
+                "<br/> Y: " + mouseY + 
+                "<br/> Threshold: " + (Math.round((mouseX / imgWidth ) * 100)) + "%";
+
 
             document.getElementById('rgb').innerHTML = 
             "R: " + imgd.data[0] + 
@@ -72,23 +77,31 @@ function main()
         canv1.width = imgWidth;
         canv2.height = imgHeight;
         canv2.width = imgWidth;
+        canv3.height = imgHeight;
+        canv3.width = imgWidth;
+        canv4.height = imgHeight;
+        canv4.width = imgWidth;
 
         let ctx1 = canv1.getContext('2d');
         let ctx2 = canv2.getContext('2d');
+        let ctx3 = canv3.getContext('2d');
+        let ctx4 = canv4.getContext('2d');
 
         ctx1.drawImage(img, 0, 0, imgWidth, imgHeight);
-        ctx2.drawImage(img, 0, 0, imgWidth, imgHeight);
 
-        processImage(ctx2);
+        ProcessImage(ctx1, ctx2, ctx3, ctx4);
     }
 }
 
-function processImage(ctx)
+function ProcessImage(ctx1, ctx2, ctx3, ctx4)
 {
-    var imageData = ctx.getImageData(0, 0, imgWidth, imgHeight);
+    var imageData = ctx1.getImageData(0, 0, imgWidth, imgHeight);
     var pix = imageData.data;
 
+    var threshold = 0.6;
+
     //pix = Grayscale(pix); // normal grayscale
+    //pix = Brighten(pix, -30);
 
     //pix = RedChannel(pix);
     //pix = GreenChannel(pix);
@@ -103,9 +116,12 @@ function processImage(ctx)
     //pix = SaturationChannel(pix);
     //pix = ValueChannel(pix);
 
-    pix = Grayscalesplit_2(pix, .05); 
-
-    ctx.putImageData(imageData, 0, 0);
+    ctx2.putImageData(imageData, 0, 0);
+    
+    Histogram(ctx3, pix, threshold);
+ 
+    pix = Grayscalesplit_2(pix, threshold); 
+    ctx4.putImageData(imageData, 0, 0);
 }
 
 
@@ -348,6 +364,62 @@ function RBGtoHSV(red, green, blue)
     }
 
     return [hue, saturation, value, 0];
+}
+
+function Brighten(pix, amount)
+{
+    for (let i = 0; i < pix.length; i += 4) {
+        //let max = Math.max(pix[i], pix[i+1], pix[i+2]);
+
+        // if(max == pix[i])
+        // {
+        //     pix[i] += amount;
+        // }
+        // else if(max == pix[i+1])
+        // {
+        //     pix[i+1] += amount;
+        // }
+        // else
+        // {
+        //     pix[i+2] += amount;
+        // }
+
+        pix[i  ] += amount;
+        pix[i+1] += amount;
+        pix[i+2] += amount;
+    }
+    
+    return pix;
+}
+
+function Histogram(ctx, pix, threshold)
+{
+    let count = new Array(256).fill(0);
+
+    for(let x = 0; x <= pix.length; x += 4)
+    {
+        count[pix[x]] += 1;
+    }
+    
+    let value = 0;
+
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'black';
+
+    let xSpacing = imgWidth / 255;
+    let barHeight = 0.05;
+
+    count.forEach(element => {
+        let x = xSpacing * value;
+        let height = count[value] * barHeight;
+
+        ctx.rect(x, imgHeight - height, xSpacing, height);
+        ctx.fill();
+
+        value++;
+    });
+    ctx.fillStyle = 'red';
+    ctx.fillRect(xSpacing * (Math.round(255 * threshold)), 0, xSpacing, imgHeight);
 }
 
 main();
