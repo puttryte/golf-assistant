@@ -46,11 +46,21 @@ Change to the 'app' directory.
 
 #### `cd app`
 In the 'app' directory:
+
+#### `npm install`
+#### `npm install -g @ionic/cli`
+#### `npm install cordova-plugin-video-capture-plus`
+#### `npm install @ionic-native/video-capture-plus`
+#### `npm install @ionic-native/core`
+#### `npx cap sync`
+- Syncs dependencies from Gradle.
+
+### To Run On Web Browser (No Camera Functionality)
 #### `ionic serve`
-Runs the app in the development mode.
+- Runs the app in the development mode.
 Open http://localhost:8100 to view it in the browser.
 
-The page will reload if you make edits.
+- The page will reload if you make edits.
 You will also see any lint errors in the console.
 
 ### To Run On Mobile Device
