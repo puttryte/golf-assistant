@@ -1,11 +1,11 @@
 var imgHeight;
 var imgWidth;
 
-var imgsrc = "./test.jpeg"; var scale = 1.5;
-//var imgsrc = "./test2.png"; var scale = 1.7;
-//var imgsrc = "./test3.jpg"; var scale = 2;
-//var imgsrc = "./test4.jpg"; var scale = 3.5;
-//var imgsrc = "./test5.jpg"; var scale = 1.7;
+var imgsrc = "../TestImages/test.jpeg"; var scale = 1.5;
+//var imgsrc = "../TestImages/test2.png"; var scale = 1.7;
+//var imgsrc = "../TestImages/test3.jpg"; var scale = 2;
+//var imgsrc = "../TestImages/test4.jpg"; var scale = 3.5;
+//var imgsrc = "../TestImages/test5.jpg"; var scale = 1.7;
 
 
 function main()
