@@ -1,2 +1,2 @@
 #Additional .gitignore file to ignore all files in this directory.
-*
+.idea/**
