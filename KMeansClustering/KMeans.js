@@ -1,110 +1,123 @@
+//#region Global variable
+
+//Test Images 
 var imgHeight;
 var imgWidth;
 
+//number of canvases in the page
+var numOfCanvas = 8;
+
+//Test Images and scale based on display
 //var imgsrc = "../TestImages/test.jpeg"; var scale = 1.7;
 //var imgsrc = "../TestImages/test2.png"; var scale = 1.7;
 //var imgsrc = "../TestImages/test3.jpg"; var scale = 2;
 //var imgsrc = "../TestImages/test4.jpg"; var scale = 3.5;
 //var imgsrc = "../TestImages/test5.jpg"; var scale = 1.7;
-//var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
-var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
+var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
+//var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
 
+//#endregion
 
 function main()
 {
-    var canv1 = document.querySelector('#canv1');
-    var canv2 = document.querySelector('#canv2');
-    var canv3 = document.querySelector('#canv3');
-    var canv4 = document.querySelector('#canv4');
-    var canv5 = document.querySelector('#canv5');
-    var canv6 = document.querySelector('#canv6');
-    var canv7 = document.querySelector('#canv7');
-    var canv8 = document.querySelector('#canv8');
+    //Initialize the canvases.
+    var canvases = new Array(numOfCanvas);
 
+    for(let i = 0; i < numOfCanvas; i++)
+    {
+        let canvID = "#canv" + (i + 1);
+        canvases[i] = document.querySelector(canvID)
+    }
+
+    //Initialize Test image
     var img = new Image();
     img.src = imgsrc;
 
+    //run function when the images is done loading
     img.onload = function(){
+        //Use scale to make it fit the page
         imgHeight = Math.round(img.height / scale);
         imgWidth = Math.round(img.width / scale);
 
-        canv1.height = imgHeight;
-        canv1.width = imgWidth;
-        canv2.height = imgHeight;
-        canv2.width = imgWidth;
-        canv3.height = imgHeight;
-        canv3.width = imgWidth;
-        canv4.height = imgHeight;
-        canv4.width = imgWidth;
-        canv5.height = imgHeight;
-        canv5.width = imgWidth;
-        canv6.height = imgHeight;
-        canv6.width = imgWidth;
-        canv7.height = imgHeight;
-        canv7.width = imgWidth;
-        canv8.height = imgHeight;
-        canv8.width = imgWidth;
+        let ctxs = new Array(canvases.length);
 
-        let ctx1 = canv1.getContext('2d');
-        let ctx2 = canv2.getContext('2d');
-        let ctx3 = canv3.getContext('2d');
-        let ctx4 = canv4.getContext('2d');
-        let ctx5 = canv5.getContext('2d');
-        let ctx6 = canv6.getContext('2d');
-        let ctx7 = canv7.getContext('2d');
-        let ctx8 = canv8.getContext('2d');
+        //apply the test image's height and width to the canvas
+        //get the context of the canvas
+        for(let i = 0; i < canvases.length; i++)
+        {
+            canvases[i].height = imgHeight;
+            canvases[i].width = imgWidth;
 
-        ctx1.drawImage(img, 0, 0, imgWidth, imgHeight);
+            ctxs[i] = canvases[i].getContext('2d');
+        }
 
-        ProcessImage(ctx1, ctx2, ctx3, ctx4, ctx5, ctx6, ctx7, ctx8);
+        //draws the original image to canvas
+        ctxs[0].drawImage(img, 0, 0, imgWidth, imgHeight);
+
+        //how many color separation
+        let clusters = 6;
+
+        //how much would the model learn
+        let iteration = 50;
+
+        //ProcessImageRGB(clusters, iteration, ctxs);
+        //ProcessImageCMYK(clusters, iteration, ctxs);
+        ProcessImageHSV(clusters, iteration, ctxs);
     }
 }
 
-function ProcessImage(ctx1, ctx2, ctx3, ctx4, ctx5, ctx6, ctx7, ctx8)
+function ProcessImageRGB(clusters, iteration, ctxs)
 {
-    var imageData = ctx1.getImageData(0, 0, imgWidth, imgHeight);
+    //read the pixels of the first canvas
+    var imageData = ctxs[0].getImageData(0, 0, imgWidth, imgHeight);
     var pix = imageData.data;
 
-    var clusters = 6;
-    var iteration = 50;
+    //Declare the clusters
     var centers = new Array(clusters);
 
-    
     for (let i = 0; i < centers.length; i++) {
         centers[i] = new Array(3);
         centers[i].fill(0);
     }
 
+    //Declare the variable for the copy of the image pixel data
     var pixels = new Array(imgHeight * imgWidth);
 
     for (let i = 0; i < pixels.length; i++) {
         pixels[i] = new Array(3).fill(0);
     }
 
+    //Declare the tracker for the pixels closest cluster
     var assignments = new Array(imgHeight * imgWidth).fill(0);
 
+    //sets up a cascading grayscale clusters
     let c = Math.round(255 / clusters);
     let color = 255;
 
+    //Initialize each gray color to each cluster
     for(let i = 0; i < centers.length; i++)
     {
         centers[i] = [color, color, color];
         color -= c;
     }
 
+    //Initialize the image's pixel data
     for (let i = 0; i < pixels.length; i++) {
         pixels[i][0] = imageData.data[(i*4)  ];
         pixels[i][1] = imageData.data[(i*4)+1];
         pixels[i][2] = imageData.data[(i*4)+2];
     }
 
+    //start of the k-means Algorithm
     var x = 0;
 
     while(x < iteration)
     {
+        //For each pixel, get the closest cluster
         for (let i = 0; i < pixels.length; i++) {
             let d = 500;
 
+            //for each cluster, get the euclidean distance the assign if less than the prevoius cluster
             for(let j = 0; j < centers.length; j++)
             {
                 let d2 = EuclideanDistance3(
@@ -120,6 +133,7 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4, ctx5, ctx6, ctx7, ctx8)
             }
         }
 
+        //for each cluster, get the mean value of all the pixels assigned to the cluster
         for(let i = 0; i < centers.length; i++)
         {
             let count = 0;
@@ -139,7 +153,6 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4, ctx5, ctx6, ctx7, ctx8)
 
             if(count == 0)
             {
-                console.log("TEST");
                 count++;
             }
 
@@ -156,17 +169,9 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4, ctx5, ctx6, ctx7, ctx8)
         x++;
     }
 
-    for(let i = 0; i < centers.length; i++)
-    {
-        console.log(
-            "R: " + centers[i][0] + 
-            "\tG:" + centers[i][1] + 
-            "\tB:" + centers[i][2]  );
-    }
-
-
-
     var index = 0;
+
+    //Apply the cluster value based on the final assignment
     for (let i = 0; i < pix.length; i += 4) {
         pix[i  ] = centers[assignments[index]][0];
         pix[i+1] = centers[assignments[index]][1];
@@ -174,156 +179,321 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4, ctx5, ctx6, ctx7, ctx8)
         index++;
     }
 
-    ctx2.putImageData(imageData, 0, 0);
+    //draw the color separated image to canvas 2
+    ctxs[1].putImageData(imageData, 0, 0);
 
-    for(let i = 0; i < pix.length; i += 4)
-    {
-        if( pix[i  ] == centers[0][0] && 
-            pix[i+1] == centers[0][1] && 
-            pix[i+2] == centers[0][2])
-        {
-            pix[i  ] = 255;
-            pix[i+1] = 255;
-            pix[i+2] = 255;
-        }
-        else
-        {
-            pix[i  ] = 0;
-            pix[i+1] = 0;
-            pix[i+2] = 0;
-        }
+    //Display each cluser on thier own canvas, separated in black and white
+    showClusters(clusters, ctxs, centers);
+}
+
+function ProcessImageCMYK(clusters, iteration, ctxs)
+{
+    //read the pixels of the first canvas
+    var imageData = ctxs[0].getImageData(0, 0, imgWidth, imgHeight);
+    var pix = imageData.data;
+
+    //Declare the clusters
+    var centers = new Array(clusters);
+
+    for (let i = 0; i < centers.length; i++) {
+        centers[i] = new Array(4);
+        centers[i].fill(0);
     }
-    
-    ctx3.putImageData(imageData, 0, 0);
 
-    if(clusters >= 2)
+    //Declare the variable for the copy of the image pixel data
+    var pixels = new Array(imgHeight * imgWidth);
+
+    for (let i = 0; i < pixels.length; i++) {
+        pixels[i] = new Array(4).fill(0);
+    }
+
+    //Declare the tracker for the pixels closest cluster
+    var assignments = new Array(imgHeight * imgWidth).fill(0);
+
+    //sets up a cascading grayscale clusters
+    let c = Math.round(100 / clusters) / 100;
+    let color = 1;
+
+    //Initialize each gray color to each cluster
+    for(let i = 0; i < centers.length; i++)
     {
-        imageData = ctx2.getImageData(0, 0, imgWidth, imgHeight);
-        pix = imageData.data;
+        centers[i] = [color, color, color];
+        color -= c;
+    }
 
-        for(let i = 0; i < pix.length; i += 4)
-        {
-            if( pix[i  ] == centers[1][0] && 
-                pix[i+1] == centers[1][1] && 
-                pix[i+2] == centers[1][2])
+    //Initialize the image's pixel data
+    for (let i = 0; i < pixels.length; i++) {
+
+        let cmyk = RBGtoCMYK(imageData.data[(i*4)], imageData.data[(i*4)+1], imageData.data[(i*4)+2])
+
+        pixels[i][0] = cmyk[0];
+        pixels[i][1] = cmyk[1];
+        pixels[i][2] = cmyk[2];
+        pixels[i][3] = cmyk[3];
+    }
+
+    //start of the k-means Algorithm
+    var x = 0;
+
+    while(x < iteration)
+    {
+        //For each pixel, get the closest cluster
+        for (let i = 0; i < pixels.length; i++) {
+            let d = 500;
+
+            //for each cluster, get the euclidean distance the assign if less than the prevoius cluster
+            for(let j = 0; j < centers.length; j++)
             {
-                pix[i  ] = 255;
-                pix[i+1] = 255;
-                pix[i+2] = 255;
+                let d2 = EuclideanDistance4(
+                    pixels[i][0], pixels[i][1], pixels[i][2], pixels[i][3],
+                    centers[j][0], centers[j][1], centers[j][2], centers[j][3]
+                );
+
+                if(d > d2)
+                {
+                    d = d2;
+                    assignments[i] = j;
+                }
+            }
+        }
+
+        //for each cluster, get the mean value of all the pixels assigned to the cluster
+        for(let i = 0; i < centers.length; i++)
+        {
+            let count = 0;
+            let c = 0;
+            let m = 0;
+            let y = 0;
+            let k = 0;
+            
+            for (let j = 0; j < assignments.length; j++) {
+                if(assignments[j] == i)
+                {
+                    c += pixels[j][0];
+                    m += pixels[j][1];
+                    y += pixels[j][2];
+                    k += pixels[j][3];
+                    count++;
+                }
+            }
+
+            if(count == 0)
+            {
+                count++;
+            }
+
+            c /= count;
+            m /= count;
+            y /= count;
+            k /= count;
+
+            centers[i][0] = Math.round(c * 100) / 100;
+            centers[i][1] = Math.round(m * 100) / 100;
+            centers[i][2] = Math.round(y * 100) / 100;
+            centers[i][3] = Math.round(k * 100) / 100;
+        }
+
+        x++;
+    }
+
+    for(let i = 0; i < centers.length; i++)
+    {
+        let cmyk = CMYKtoRBG(centers[i][0], centers[i][1], centers[i][2], centers[i][3])
+        centers[i][0] = Math.round(cmyk[0]);
+        centers[i][1] = Math.round(cmyk[1]);
+        centers[i][2] = Math.round(cmyk[2]);
+        centers[i][3] = 255;
+
+        console.log(centers[i]);
+    }
+
+    var index = 0;
+
+    //Apply the cluster value based on the final assignment
+    for (let i = 0; i < pix.length; i += 4) {
+        pix[i  ] = centers[assignments[index]][0];
+        pix[i+1] = centers[assignments[index]][1];
+        pix[i+2] = centers[assignments[index]][2];
+        index++;
+    }
+
+    //draw the color separated image to canvas 2
+    ctxs[1].putImageData(imageData, 0, 0);
+
+    //Display each cluser on thier own canvas, separated in black and white
+    showClusters(clusters, ctxs, centers);
+}
+
+function ProcessImageHSV(clusters, iteration, ctxs)
+{
+    //read the pixels of the first canvas
+    var imageData = ctxs[0].getImageData(0, 0, imgWidth, imgHeight);
+    var pix = imageData.data;
+
+    //Declare the clusters
+    var centers = new Array(clusters);
+
+    for (let i = 0; i < centers.length; i++) {
+        centers[i] = new Array(3);
+        centers[i].fill(0);
+    }
+
+    //Declare the variable for the copy of the image pixel data
+    var pixels = new Array(imgHeight * imgWidth);
+
+    for (let i = 0; i < pixels.length; i++) {
+        pixels[i] = new Array(3).fill(0);
+    }
+
+    //Declare the tracker for the pixels closest cluster
+    var assignments = new Array(imgHeight * imgWidth).fill(0);
+
+    //sets up a cascading grayscale clusters
+    let h = Math.round(360 / clusters);
+    let hue= 360;
+
+    let sv = Math.round(100 / clusters) / 100;
+    let satAndVal= 1;
+
+    //Initialize each gray color to each cluster
+    for(let i = 0; i < centers.length; i++)
+    {
+        centers[i] = [hue, satAndVal, satAndVal];
+        hue -= h;
+        satAndVal -= sv;
+    }
+
+    //Initialize the image's pixel data
+    for (let i = 0; i < pixels.length; i++) {
+
+        let hsv = RBGtoHSV(imageData.data[(i*4)], imageData.data[(i*4)+1], imageData.data[(i*4)+2])
+
+        if(hsv[0] < 0)
+        {
+            hsv[0] *= -1;
+        }
+
+        pixels[i][0] = Math.round(hsv[0]);
+        pixels[i][1] = Math.round(hsv[1] * 100) / 100;
+        pixels[i][2] = Math.round(hsv[2] * 100) / 100
+    }
+
+    //start of the k-means Algorithm
+    var x = 0;
+
+    while(x < iteration)
+    {
+        //For each pixel, get the closest cluster
+        for (let i = 0; i < pixels.length; i++) {
+            let d = 500;
+
+            //for each cluster, get the euclidean distance the assign if less than the prevoius cluster
+            for(let j = 0; j < centers.length; j++)
+            {
+                let d2 = EuclideanDistance3(
+                    pixels[i][0], pixels[i][1], pixels[i][2],
+                    centers[j][0], centers[j][1], centers[j][2]
+                );
+
+                if(d > d2)
+                {
+                    d = d2;
+                    assignments[i] = j;
+                }
+            }
+        }
+
+        //for each cluster, get the mean value of all the pixels assigned to the cluster
+        for(let i = 0; i < centers.length; i++)
+        {
+            let count = 0;
+            let h = 0;
+            let s = 0;
+            let v = 0;
+            
+            for (let j = 0; j < assignments.length; j++) {
+                if(assignments[j] == i)
+                {
+                    h += pixels[j][0];
+                    s += pixels[j][1];
+                    v += pixels[j][2];
+                    count++;
+                }
+            }
+
+            if(count == 0)
+            {
+                count++;
+            }
+
+            h /= count;
+            s /= count;
+            v /= count;
+
+            centers[i][0] = Math.round(h);
+            centers[i][1] = Math.round(s * 100) / 100;
+            centers[i][2] = Math.round(v* 100) / 100;
+        }
+
+        x++;
+    }
+
+    var index = 0;
+
+    //
+    for(let i = 0; i < centers.length; i++)
+    {
+        let hsv = HSVtoRGB(centers[i][0], centers[i][1], centers[i][2]);
+        centers[i][0] = Math.round(hsv[0]);
+        centers[i][1] = Math.round(hsv[1]);
+        centers[i][2] = Math.round(hsv[2]);
+    }
+
+    //Apply the cluster value based on the final assignment
+    for (let i = 0; i < pix.length; i += 4) {
+        pix[i  ] = centers[assignments[index]][0];
+        pix[i+1] = centers[assignments[index]][1];
+        pix[i+2] = centers[assignments[index]][2];
+        index++;
+    }
+
+    //draw the color separated image to canvas 2
+    ctxs[1].putImageData(imageData, 0, 0);
+
+    //Display each cluser on thier own canvas, separated in black and white
+    showClusters(clusters, ctxs, centers);
+}
+
+function showClusters(numOfClusters, ctxs, centers)
+{
+    console.log(centers[0])
+    console.log(centers[1])
+    console.log(centers[2])
+    console.log(centers[3])
+    for(let i = 0; i < numOfClusters; i++)
+    {
+        let imageData = ctxs[1].getImageData(0, 0, imgWidth, imgHeight);
+        let pixels = imageData.data;
+
+        for(let j = 0; j < pixels.length; j += 4)
+        {
+            if( pixels[j  ] == centers[i][0] && 
+                pixels[j+1] == centers[i][1] && 
+                pixels[j+2] == centers[i][2])
+            {
+                pixels[j  ] = 255;
+                pixels[j+1] = 255;
+                pixels[j+2] = 255;
             }
             else
             {
-                pix[i  ] = 0;
-                pix[i+1] = 0;
-                pix[i+2] = 0;
+                pixels[j  ] = 0;
+                pixels[j+1] = 0;
+                pixels[j+2] = 0;
             }
         }
-    }
-    
-    ctx4.putImageData(imageData, 0, 0);
 
-    if(clusters >= 3)
-    {
-        imageData = ctx2.getImageData(0, 0, imgWidth, imgHeight);
-        pix = imageData.data;
-
-        for(let i = 0; i < pix.length; i += 4)
-        {
-            if( pix[i  ] == centers[2][0] && 
-                pix[i+1] == centers[2][1] && 
-                pix[i+2] == centers[2][2])
-            {
-                pix[i  ] = 255;
-                pix[i+1] = 255;
-                pix[i+2] = 255;
-            }
-            else
-            {
-                pix[i  ] = 0;
-                pix[i+1] = 0;
-                pix[i+2] = 0;
-            }
-        }
-        
-        ctx5.putImageData(imageData, 0, 0);
-    }
-
-    if(clusters >= 4)
-    {
-        imageData = ctx2.getImageData(0, 0, imgWidth, imgHeight);
-        pix = imageData.data;
-
-        for(let i = 0; i < pix.length; i += 4)
-        {
-            if( pix[i  ] == centers[3][0] && 
-                pix[i+1] == centers[3][1] && 
-                pix[i+2] == centers[3][2])
-            {
-                pix[i  ] = 255;
-                pix[i+1] = 255;
-                pix[i+2] = 255;
-            }
-            else
-            {
-                pix[i  ] = 0;
-                pix[i+1] = 0;
-                pix[i+2] = 0;
-            }
-        }
-        
-        ctx6.putImageData(imageData, 0, 0);
-    }
-
-    if(clusters >= 5)
-    {
-        imageData = ctx2.getImageData(0, 0, imgWidth, imgHeight);
-        pix = imageData.data;
-
-        for(let i = 0; i < pix.length; i += 4)
-        {
-            if( pix[i  ] == centers[4][0] && 
-                pix[i+1] == centers[4][1] && 
-                pix[i+2] == centers[4][2])
-            {
-                pix[i  ] = 255;
-                pix[i+1] = 255;
-                pix[i+2] = 255;
-            }
-            else
-            {
-                pix[i  ] = 0;
-                pix[i+1] = 0;
-                pix[i+2] = 0;
-            }
-        }
-        
-        ctx7.putImageData(imageData, 0, 0);
-    }
-
-    if(clusters >= 6)
-    {
-        imageData = ctx2.getImageData(0, 0, imgWidth, imgHeight);
-        pix = imageData.data;
-
-        for(let i = 0; i < pix.length; i += 4)
-        {
-            if( pix[i  ] == centers[5][0] && 
-                pix[i+1] == centers[5][1] && 
-                pix[i+2] == centers[5][2])
-            {
-                pix[i  ] = 255;
-                pix[i+1] = 255;
-                pix[i+2] = 255;
-            }
-            else
-            {
-                pix[i  ] = 0;
-                pix[i+1] = 0;
-                pix[i+2] = 0;
-            }
-        }
-        
-        ctx8.putImageData(imageData, 0, 0);
+        ctxs[i + 2].putImageData(imageData, 0, 0);
     }
 }
 
@@ -332,5 +502,140 @@ function EuclideanDistance3(q1, q2, q3, p1, p2, p3)
     return Math.sqrt(Math.pow((q1 - p1), 2) + Math.pow((q2 - p2), 2) + Math.pow((q3 - p3), 2));
 }
 
+function EuclideanDistance4(q1, q2, q3, q4, p1, p2, p3, p4)
+{
+    return Math.sqrt(Math.pow((q1 - p1), 2) + Math.pow((q2 - p2), 2) + Math.pow((q3 - p3), 2) + Math.pow((q4 - p4), 2));
+}
+
+function RBGtoCMYK(red, green, blue)
+{
+    let cyan, magenta, yellow, key;
+
+    let red_p = red/255;
+    let green_p = green/255;
+    let blue_p = blue/255;
+
+    key = 1 - Math.max(red_p, green_p, blue_p);
+    cyan = (1 - red_p - key) / (1 - key)
+    magenta = (1 - green_p - key) / (1 - key);
+    yellow = (1 - blue_p - key) / (1 - key);
+
+    return [cyan, magenta, yellow, key];
+}
+
+function RBGtoHSV(red, green, blue)
+{
+    let hue, saturation, value;
+
+    let red_p = red/255;
+    let green_p = green/255;
+    let blue_p = blue/255;
+
+    let colorMax = Math.max(red_p, green_p, blue_p);
+    let colorMin= Math.min(red_p, green_p, blue_p);
+    let colorDelta = colorMax - colorMin;
+
+    value = colorMax;
+
+    if(colorMax == 0)
+    {
+        saturation = 0;
+    }
+    else
+    {
+        saturation = colorDelta / colorMax;
+    }
+
+    if(colorDelta == 0)
+    {
+        hue = 0;
+    }
+    else if(colorMax == red_p)
+    {
+        hue = 60 * (((green_p - blue_p) / colorDelta) % 6);
+    }
+    else if(colorMax == green_p)
+    {
+        hue = 60 * (((blue_p - red_p) / colorDelta) + 2);
+    }
+    else
+    {
+        hue = 60 * (((red_p - green_p) / colorDelta) + 4);
+    }
+
+    return [hue, saturation, value];
+}
+
+function CMYKtoRBG(cyan, magenta, yellow, key)
+{
+    let red = 255 * (1 - cyan) * (1 - key);
+    let green = 255 * (1 - magenta) * (1 - key);
+    let blue = 255 * (1 - yellow) * (1 - key);
+
+    return [red, green, blue];
+}
+
+function HSVtoRGB(hue, saturation, value)
+{
+    if(hue < 0)
+    {
+        hue += 360;
+    }
+    else if(hue > 360)
+    {
+        hue -= 360;
+    }
+
+    let c = value * saturation;
+    let x = c * (1 - Math.abs(((hue / 60) % 2) - 1))
+    let m = value - c;
+
+    let rp;
+    let gp;
+    let bp;
+
+    if(hue < 60)
+    {
+        rp = c;
+        gp = x;
+        bp = 0;
+    }
+    else if(hue < 120)
+    {
+        rp = x;
+        gp = c;
+        bp = 0;
+    }
+    else if(hue < 180)
+    {
+        rp = 0;
+        gp = c;
+        bp = x;
+    }
+    else if(hue < 240)
+    {
+        rp = 0;
+        gp = x;
+        bp = c;
+    }
+    else if(hue < 300)
+    {
+        rp = x;
+        gp = 0;
+        bp = c;
+    }
+    else
+    {
+        rp = c;
+        gp = 0;
+        bp = x;
+    }
+
+    let red = (rp + m) * 255;
+    let green = (gp + m) * 255;
+    let blue = (bp + m) * 255;
+
+    return [red, green, blue];
+}
 
 main();

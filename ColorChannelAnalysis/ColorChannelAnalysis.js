@@ -1,12 +1,14 @@
 var imgHeight;
 var imgWidth;
 
-var imgsrc = "../TestImages/test.jpeg"; var scale = 1.5;
+//Test Images and scale based on display
+//var imgsrc = "../TestImages/test.jpeg"; var scale = 1.7;
 //var imgsrc = "../TestImages/test2.png"; var scale = 1.7;
 //var imgsrc = "../TestImages/test3.jpg"; var scale = 2;
 //var imgsrc = "../TestImages/test4.jpg"; var scale = 3.5;
 //var imgsrc = "../TestImages/test5.jpg"; var scale = 1.7;
-
+//var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
+var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
 
 function main()
 {
@@ -98,7 +100,7 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4)
     var imageData = ctx1.getImageData(0, 0, imgWidth, imgHeight);
     var pix = imageData.data;
 
-    var threshold = 0.6;
+    var threshold = 0.35;
 
     //pix = Grayscale(pix); // normal grayscale
     //pix = Brighten(pix, -30);
@@ -109,12 +111,12 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4)
 
     //pix = CyanChannel(pix);
     //pix = MagentaChannel(pix);
-    pix = YellowChannel(pix);
+    //pix = YellowChannel(pix);
     //pix = KeyChannel(pix);
     
     //pix = HueChannel(pix);
     //pix = SaturationChannel(pix);
-    //pix = ValueChannel(pix);
+    pix = ValueChannel(pix);
 
     ctx2.putImageData(imageData, 0, 0);
     
@@ -363,7 +365,7 @@ function RBGtoHSV(red, green, blue)
         hue = 60 * (((red_p - green_p) / colorDelta) + 4);
     }
 
-    return [hue, saturation, value, 0];
+    return [hue, saturation, value];
 }
 
 function Brighten(pix, amount)
