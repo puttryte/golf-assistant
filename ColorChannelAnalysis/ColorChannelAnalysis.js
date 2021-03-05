@@ -102,7 +102,7 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4)
 
     var threshold = 0.35;
 
-    //pix = Grayscale(pix); // normal grayscale
+    pix = Grayscale(pix); // normal grayscale
     //pix = Brighten(pix, -30);
 
     //pix = RedChannel(pix);
@@ -116,7 +116,7 @@ function ProcessImage(ctx1, ctx2, ctx3, ctx4)
     
     //pix = HueChannel(pix);
     //pix = SaturationChannel(pix);
-    pix = ValueChannel(pix);
+    //pix = ValueChannel(pix);
 
     ctx2.putImageData(imageData, 0, 0);
     

@@ -6,3 +6,6 @@ This is a web app that shows what different color channel are able to highlight 
 
 K-Means Clustering
 This is a web app that shows a k-means clustering for the selected cluster sizes and test images. 
+
+Erosion and Dilation 
+This is a web app that show an image processing algorithm of removing noise and filling out holes in a black and white image.

@@ -13,8 +13,8 @@ var numOfCanvas = 8;
 //var imgsrc = "../TestImages/test3.jpg"; var scale = 2;
 //var imgsrc = "../TestImages/test4.jpg"; var scale = 3.5;
 //var imgsrc = "../TestImages/test5.jpg"; var scale = 1.7;
-var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
-//var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
+//var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
+var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
 
 //#endregion
 
@@ -58,11 +58,11 @@ function main()
         let clusters = 6;
 
         //how much would the model learn
-        let iteration = 50;
+        let iteration = 10;
 
-        //ProcessImageRGB(clusters, iteration, ctxs);
+        ProcessImageRGB(clusters, iteration, ctxs);
         //ProcessImageCMYK(clusters, iteration, ctxs);
-        ProcessImageHSV(clusters, iteration, ctxs);
+        //ProcessImageHSV(clusters, iteration, ctxs);
     }
 }
 
