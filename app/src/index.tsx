@@ -1,3 +1,6 @@
+/*
+This file renders the homepage for react, defines custom elements, and unregisters our service worker
+*/
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';

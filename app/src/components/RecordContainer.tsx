@@ -1,3 +1,6 @@
+/*
+This file handles camera recording for the application
+*/
 import './RecordContainer.css';
 import {camera, trash, close, hourglass, hourglassOutline, golf} from 'ionicons/icons';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,

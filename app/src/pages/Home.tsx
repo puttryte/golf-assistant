@@ -1,3 +1,6 @@
+/*
+React home page, including toolbar and title
+*/
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './Home.css';
 import RecordContainer from "../components/RecordContainer";

@@ -1,3 +1,6 @@
+/*
+This file reports webvitals
+*/
 import { ReportHandler } from 'web-vitals';
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
