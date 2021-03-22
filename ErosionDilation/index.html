@@ -8,11 +8,54 @@
     </head>
     <body style="text-align: center">
         <div>
+            <div>
+                <span style = "margin: 5px;">
+                    <label for = "testImage">Test Image: </label>
+                    <select name ="testImage" id = "testImage">   
+                    </select>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "threshold">Threshold: </label>
+                    <input type = "number" name = "threshold" id = "threshold" min = 1 max = 255 step = 1 value = 128>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "magnitude">Pre-defined Erosion/Dilation Magnitude: </label>
+                    <input type = "number" name = "magnitude" id = "magnitude" min = 1 step = 1 value = 1>
+                </span>
+            </div>
+            <div>
+                <span style = "margin: 5px;">
+                    <label for = "initial_Erosion">Custom: Initial Erosion: </label>
+                    <input type = "number" name = "initial_Erosion" id = "initial_Erosion" min = 1 step = 1 value = 1>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "mid_Dilation">Dilation: </label>
+                    <input type = "number" name = "mid_Dilation" id = "mid_Dilation" min = 1 step = 1 value = 2>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "final_Erosion">Final Erosion: </label>
+                    <input type = "number" name = "final_Erosion" id = "final_Erosion" min = 1 step = 1 value = 1>
+                </span>
+            </div>
+            <div style = "margin: 5px;">
+                <button id = "applybtn">Apply</button>
+            </div>
+            <div>
+                <span style = "margin: 5px;">
+                    <input type = "checkbox" name = "custom" id = "custom" checked>
+                    <label for = "custom">Use Custom Erosion/Dilation: </label>
+                </span>
+            </div>
+            <div style = "margin: 5px;">
+                <button id = "processbtn">Process Image</button>
+            </div>
+        </div>
+        <div>
             <div style ="display: inline-flex;">
                 <div>
                     <h1 >Original Image</h1>
                     <canvas 
-                    id="canv1" 
+                    id="canv0" 
                     width="500" 
                     height="500" 
                     style= "
@@ -23,7 +66,7 @@
                 <div>
                     <h1>Black and White Image</h1>
                     <canvas 
-                    id="canv2" 
+                    id="canv1" 
                     width="500" 
                     height="500" 
                     style= "
@@ -34,7 +77,7 @@
                 <div>
                     <h1>After Processing</h1>
                     <canvas 
-                    id="canv6" 
+                    id="canv2" 
                     width="500" 
                     height="500" 
                     style= "

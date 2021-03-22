@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <script 
+            src ="./RGChroma.js" 
+            type= "module"
+        ></script>
+    </head>
+    <body style="text-align: center">
+        <div>
+            <div>
+                <span style = "margin: 5px;">
+                    <label for = "testImage">Test Image: </label>
+                    <select name ="testImage" id = "testImage">   
+                    </select>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "imageSize">Image Size: </label>
+                    <input type = "number" name = "imageSize" id = "imageSize" min = 0 step = 1 value = 300>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "patchSize">Patch Size: </label>
+                    <input type = "number" name = "patchSize" id = "patchSize" min = 0 step = 1 value = 10>
+                </span>
+                <span style = "margin: 5px;">
+                    <label for = "magnitude">Erosion/Dilation Magnitude: </label>
+                    <input type = "number" name = "magnitude" id = "magnitude" min = 1 step = 1 value = 1>
+                </span>
+            </div>
+            <div style = "margin: 5px;">
+                <button id = "applybtn">Apply</button>
+            </div>
+            <span style = "margin: 5px;">
+                <input type = "checkbox" name = "processMask" id = "processMask" checked>
+                <label for = "processMask">Use Erosion/Dilation: </label>
+            </span>
+            <div style = "margin: 5px;">
+                <button id = "processbtn">Process Image</button>
+            </div>
+        </div>
+        <div style = "text-align:  center;">
+            <div>
+                <div style ="display: inline-flex;">
+                    <div>
+                        <h1 >Original Image</h1>
+                        <canvas 
+                        id="canv0" 
+                        width="500" 
+                        height="500" 
+                        style= "
+                            border:1px solid #000000;
+                            "
+                        ></canvas>
+                    </div>
+                    <div>
+                        <h1>RG Chromatic</h1>
+                        <canvas 
+                        id="canv1" 
+                        width="500" 
+                        height="500" 
+                        style= "
+                            border:1px solid #000000;
+                            "
+                        ></canvas>
+                    </div>
+                    <div>
+                        <h1>Applied Mask</h1>
+                        <canvas 
+                        id="canv4" 
+                        width="500" 
+                        height="500" 
+                        style= "
+                            border:1px solid #000000;
+                            "
+                        ></canvas>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style ="display: inline-flex;">
+                    <div>
+                        <h1 >Sample Patch</h1>
+                        <canvas 
+                        id="canv2" 
+                        width="500" 
+                        height="500" 
+                        style= "
+                            border:1px solid #000000;
+                            "
+                        ></canvas>
+                    </div>
+                    <div>
+                        <h1 >Mask</h1>
+                        <canvas 
+                        id="canv3" 
+                        width="500" 
+                        height="500" 
+                        style= "
+                            border:1px solid #000000;
+                            "
+                        ></canvas>
+                    </div>
+                    <div>
+                        <h1 >Processed Mask</h1>
+                        <canvas 
+                        id="canv5" 
+                        width="500" 
+                        height="500" 
+                        style= "
+                            border:1px solid #000000;
+                            "
+                        ></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

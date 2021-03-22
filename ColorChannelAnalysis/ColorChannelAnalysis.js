@@ -1,131 +1,169 @@
+import testImages from "../TestImages/TestImages.js";
+
 var imgHeight;
 var imgWidth;
-
-//Test Images and scale based on display
-//var imgsrc = "../TestImages/test.jpeg"; var scale = 1.7;
-//var imgsrc = "../TestImages/test2.png"; var scale = 1.7;
-//var imgsrc = "../TestImages/test3.jpg"; var scale = 2;
-//var imgsrc = "../TestImages/test4.jpg"; var scale = 3.5;
-//var imgsrc = "../TestImages/test5.jpg"; var scale = 1.7;
-//var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
-var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
+var canvs;
+var ctxs;
 
 function main()
 {
-    var canv1 = document.querySelector('#canv1');
-    var canv2 = document.querySelector('#canv2');
-    var canv3 = document.querySelector('#canv3');
-    var canv4 = document.querySelector('#canv4');
+    var mySelect = document.getElementById("testImage");
 
-    var label = document.querySelector('label');
-
-    var mouseY;
-    var mouseX;
-
-    document.body.addEventListener('mousedown', click);
-
-    function click(event) {
-        let canv = event.target;
-
-        if(canv.id != "")
-        {
-            let ctx = canv.getContext('2d'); 
-
-            let myCanvasBB = canv.getBoundingClientRect();
-
-            mouseX = event.clientX - myCanvasBB.left;
-            mouseY = event.clientY - myCanvasBB.top;
-
-            var imgd = ctx.getImageData(mouseX, mouseY, 1, 1);
-            var pixel = imgd.data;
-            
-            document.getElementById('coordinates').innerHTML = 
-                " X: " + mouseX + 
-                "<br/> Y: " + mouseY + 
-                "<br/> Threshold: " + (Math.round((mouseX / imgWidth ) * 100)) + "%";
-
-
-            document.getElementById('rgb').innerHTML = 
-            "R: " + imgd.data[0] + 
-            "<br/> G: " + pixel[1] + 
-            "<br/> B: " + pixel[2] +
-            "<br/> A: " + pixel[3];
-
-            pixel = RBGtoCMYK(imgd.data[0], imgd.data[1], imgd.data[2]);
-
-            document.getElementById('cmyk').innerHTML = 
-            "C: " + Math.round(pixel[0] * 100) + "%" +
-            "<br/> M: " + Math.round(pixel[1] * 100) + "%" +
-            "<br/> Y: " + Math.round(pixel[2] * 100) + "%" +
-            "<br/> K: " + Math.round(pixel[3] * 100) + "%";
-
-            pixel = RBGtoHSV(imgd.data[0], imgd.data[1], imgd.data[2]);
-
-            document.getElementById('hsv').innerHTML = 
-            "H: " + Math.round(pixel[0]) + "&deg" + 
-            "<br/> S: " + Math.round(pixel[1] * 100) + "%" + 
-            "<br/> V: " + Math.round(pixel[2] * 100) + "%";
-        }
+    for (let i = 0; i < testImages.images.length; i++)
+    {
+        let option = document.createElement("option");
+        option.value = i;
+        option.text = testImages.images[i].name;
+        mySelect.add(option);
     }
-    
-    var img = new Image();
-    img.src = imgsrc;
 
-    img.onload = function(){
-        imgHeight = img.height / scale;
-        imgWidth = img.width / scale;
+    var btn = document.getElementById("applybtn");
+    btn.addEventListener('click', Apply);
 
-        canv1.height = imgHeight;
-        canv1.width = imgWidth;
-        canv2.height = imgHeight;
-        canv2.width = imgWidth;
-        canv3.height = imgHeight;
-        canv3.width = imgWidth;
-        canv4.height = imgHeight;
-        canv4.width = imgWidth;
+    var range = document.getElementById("histrogramThreshold");
 
-        let ctx1 = canv1.getContext('2d');
-        let ctx2 = canv2.getContext('2d');
-        let ctx3 = canv3.getContext('2d');
-        let ctx4 = canv4.getContext('2d');
+    range.addEventListener("input", function(){
+        document.getElementById("ThresholdLabel").innerHTML = "Histrogram Threshold (" + document.getElementById("histrogramThreshold").value + "%):";
+    });
 
-        ctx1.drawImage(img, 0, 0, imgWidth, imgHeight);
+    canvs = [
+        document.querySelector('#canv1'),
+        document.querySelector('#canv2'),
+        document.querySelector('#canv3'),
+        document.querySelector('#canv4'),
+    ];
 
-        ProcessImage(ctx1, ctx2, ctx3, ctx4);
+    for(let i = 0; i < canvs.length; i++)
+    {
+        canvs[i].addEventListener('click', labelPixel);
     }
+
+    ctxs = new Array(canvs.length);
+
+    Apply();
 }
 
-function ProcessImage(ctx1, ctx2, ctx3, ctx4)
+function Apply()
 {
-    var imageData = ctx1.getImageData(0, 0, imgWidth, imgHeight);
-    var pix = imageData.data;
+    let testImage_Select = document.getElementById("testImage").value;
+    let colorSpace_Select = document.getElementById("colorSpace").value;
+    let threshold_Select = document.getElementById("histrogramThreshold").value;
 
-    var threshold = 0.35;
+    let img = new Image();
+    img.src = testImages.images[testImage_Select].source;
 
-    pix = Grayscale(pix); // normal grayscale
-    //pix = Brighten(pix, -30);
+    img.onload = function()
+    {
+        imgHeight = img.height / testImages.images[testImage_Select].scale;
+        imgWidth = img.width / testImages.images[testImage_Select].scale;
 
-    //pix = RedChannel(pix);
-    //pix = GreenChannel(pix);
-    //pix = BlueChannel(pix);
+        for(let i = 0; i < canvs.length; i++)
+        {
+            canvs[i].height = imgHeight;
+            canvs[i].width = imgWidth;
+            ctxs[i] = canvs[i].getContext('2d'); 
+        }
 
-    //pix = CyanChannel(pix);
-    //pix = MagentaChannel(pix);
-    //pix = YellowChannel(pix);
-    //pix = KeyChannel(pix);
-    
-    //pix = HueChannel(pix);
-    //pix = SaturationChannel(pix);
-    //pix = ValueChannel(pix);
+        ctxs[0].drawImage(img, 0, 0, imgWidth, imgHeight);
 
-    ctx2.putImageData(imageData, 0, 0);
-    
-    Histogram(ctx3, pix, threshold);
- 
-    pix = Grayscalesplit_2(pix, threshold); 
-    ctx4.putImageData(imageData, 0, 0);
+        ProcessImage(ctxs, colorSpace_Select, threshold_Select);
+    }
 }
 
+function labelPixel(event) {
+    let mouseY;
+    let mouseX;
+
+    let canv = event.target;
+    let ctx = canv.getContext('2d'); 
+    let myCanvasBB = canv.getBoundingClientRect();
+
+    mouseX = event.clientX - myCanvasBB.left;
+    mouseY = event.clientY - myCanvasBB.top;
+
+    var imgd = ctx.getImageData(mouseX, mouseY, 1, 1);
+    var pixel = imgd.data;
+    
+    document.getElementById('coordinates').innerHTML = 
+        " X: " + mouseX + 
+        "<br/> Y: " + mouseY + 
+        "<br/> Threshold: " + (Math.round((mouseX / imgWidth ) * 100)) + "%";
+
+
+    document.getElementById('rgb').innerHTML = 
+    "R: " + imgd.data[0] + 
+    "<br/> G: " + pixel[1] + 
+    "<br/> B: " + pixel[2] +
+    "<br/> A: " + pixel[3];
+
+    pixel = RBGtoCMYK(imgd.data[0], imgd.data[1], imgd.data[2]);
+
+    document.getElementById('cmyk').innerHTML = 
+    "C: " + Math.round(pixel[0] * 100) + "%" +
+    "<br/> M: " + Math.round(pixel[1] * 100) + "%" +
+    "<br/> Y: " + Math.round(pixel[2] * 100) + "%" +
+    "<br/> K: " + Math.round(pixel[3] * 100) + "%";
+
+    pixel = RBGtoHSV(imgd.data[0], imgd.data[1], imgd.data[2]);
+
+    document.getElementById('hsv').innerHTML = 
+    "H: " + Math.round(pixel[0]) + "&deg" + 
+    "<br/> S: " + Math.round(pixel[1] * 100) + "%" + 
+    "<br/> V: " + Math.round(pixel[2] * 100) + "%";
+}
+
+function ProcessImage(contexts, cs, t)
+{
+    let imageData = contexts[0].getImageData(0, 0, imgWidth, imgHeight);
+    let pixels = imageData.data;
+
+    t /= 100;
+
+    switch(cs)
+    {
+        case "gray":
+            pixels = Grayscale(pixels);
+            break;
+        case "red":
+            pixels = RedChannel(pixels);
+            break;
+        case "green":
+            pixels = GreenChannel(pixels);
+            break;
+        case "blue":
+            pixels = BlueChannel(pixels);
+            break;
+        case "cyan":
+            pixels = CyanChannel(pixels);
+            break;
+        case "magenta":
+            pixels = MagentaChannel(pixels);
+            break;
+        case "yellow":
+            pixels = YellowChannel(pixels);
+            break;
+        case "key":
+            pixels = KeyChannel(pixels);
+            break;
+        case "hue":
+            pixels = HueChannel(pixels);
+            break;
+        case "saturation":
+            pixels = SaturationChannel(pixels);
+            break;
+        case "value":
+            pixels = ValueChannel(pixels);
+            break;
+    }
+
+    contexts[1].putImageData(imageData, 0, 0);
+
+    Histogram(contexts[2], pixels, t);
+
+    pixels = Grayscalesplit_2(pixels, t);
+
+    contexts[3].putImageData(imageData, 0, 0);
+}
 
 function Grayscale(pix)
 {
@@ -365,33 +403,12 @@ function RBGtoHSV(red, green, blue)
         hue = 60 * (((red_p - green_p) / colorDelta) + 4);
     }
 
-    return [hue, saturation, value];
-}
-
-function Brighten(pix, amount)
-{
-    for (let i = 0; i < pix.length; i += 4) {
-        //let max = Math.max(pix[i], pix[i+1], pix[i+2]);
-
-        // if(max == pix[i])
-        // {
-        //     pix[i] += amount;
-        // }
-        // else if(max == pix[i+1])
-        // {
-        //     pix[i+1] += amount;
-        // }
-        // else
-        // {
-        //     pix[i+2] += amount;
-        // }
-
-        pix[i  ] += amount;
-        pix[i+1] += amount;
-        pix[i+2] += amount;
+    if(hue < 0)
+    {
+        hue += 360
     }
-    
-    return pix;
+
+    return [hue, saturation, value];
 }
 
 function Histogram(ctx, pix, threshold)

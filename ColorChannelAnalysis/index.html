@@ -8,6 +8,38 @@
     </head>
     <body style="text-align: center">
         <div>
+            <div>
+                <span>
+                    <label for = "testImage">Test Image: </label>
+                    <select name ="testImage" id = "testImage">   
+                    </select>
+                </span>
+                <span>
+                    <label for = "colorSpace">Color Space: </label>
+                    <select name ="colorSpace" id = "colorSpace">
+                        <option value = "gray">Gray</option>
+                        <option value = "red">Red</option>
+                        <option value = "green">Green</option>
+                        <option value = "blue">Blue</option>
+                        <option value = "cyan">Cyan</option>
+                        <option value = "magenta">Magenta</option>
+                        <option value = "yellow">Yellow</option>
+                        <option value = "key">Key</option>
+                        <option value = "hue">Hue</option>
+                        <option value = "saturation">Saturation</option>
+                        <option value = "value">Value</option>
+                    </select>
+                </span>
+                <span>
+                    <label id = "ThresholdLabel" for = "histrogramThreshold">Histrogram Threshold (50%): </label>
+                    <input type = "range" name = "histrogramThreshold" id = "histrogramThreshold" min = 0 max = 100 step = 1 value = 50>
+                </span>
+            </div>
+            <div>
+                <button id = "applybtn">Apply</button>
+            </div>
+        </div>
+        <div>
             <div style ="display: inline-flex;">
                 <div>
                     <h1 >Original Image</h1>

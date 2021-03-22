@@ -1,23 +1,14 @@
+import TestImages from "../TestImages/TestImages.js";
+
 var imgHeight;
 var imgWidth;
-
-//more than 0
-const magnitude = 1;
-
-//between 0 - 255
-const threshold = 120;
-
-//Test Images and scale based on display
-//const imgsrc = "../TestImages/test.jpeg"; const scale = 1.7;
-//const imgsrc = "../TestImages/test2.png"; const scale = 1.7;
-//const imgsrc = "../TestImages/test3.jpg"; const scale = 2;
-//const imgsrc = "../TestImages/test4.jpg"; const scale = 3.5;
-//const imgsrc = "../TestImages/test5.jpg"; const scale = 1.7;
-const imgsrc = "../TestImages/test6.jpg"; const scale = 5;
-//const imgsrc = "../TestImages/test7.jpg"; const scale = 4.8;
-
-const numOfCanvases = 6;
-const iteration = magnitude * 4;
+var canvs;
+var ctxs;
+var magnitude = 0;
+var ini_erosion = 0;
+var mid_dilation = 0;
+var fin_erosion = 0;
+var threshold = 0;
 
 const hitMarker = [ 255, 255, 255, 
                     255, 255, 255, 
@@ -25,47 +16,91 @@ const hitMarker = [ 255, 255, 255,
 
 function main()
 {
-    var canvId = "#canv";
-    var canvases = new Array(numOfCanvases);
-    var ctxs = new Array(numOfCanvases);
+    var mySelect = document.getElementById("testImage");
 
-    for(let i = 0; i < numOfCanvases; i++)
+    for (let i = 0; i < TestImages.images.length; i++)
     {
-        canvases[i] = document.querySelector(canvId + (i + 1))
+        let option = document.createElement("option");
+        option.value = i;
+        option.text = TestImages.images[i].name;
+        mySelect.add(option);
     }
-    
-    var img = new Image();
-    img.src = imgsrc;
+
+    mySelect.value = 6;
+
+    document.getElementById("applybtn").addEventListener('click', Apply);
+    document.getElementById("processbtn").addEventListener('click', ProcessImage);
+
+    canvs = [
+        document.querySelector('#canv0'),
+        document.querySelector('#canv1'),
+        document.querySelector('#canv2'),
+        document.querySelector('#canv3'),
+        document.querySelector('#canv4'),
+        document.querySelector('#canv5'),
+    ];
+
+    ctxs = new Array(canvs.length);
+
+    Apply();
+}
+
+function Apply()
+{
+    let testImage_select = parseInt(document.getElementById("testImage").value);
+    magnitude = parseInt(document.getElementById("magnitude").value);
+    ini_erosion = parseInt(document.getElementById("initial_Erosion").value);
+    mid_dilation = parseInt(document.getElementById("mid_Dilation").value);
+    fin_erosion = parseInt(document.getElementById("final_Erosion").value);
+    threshold = parseInt(document.getElementById("threshold").value);
+
+    let img = new Image();
+    img.src = TestImages.images[testImage_select].source;
 
     img.onload = function()
     {
-        imgHeight = Math.round(img.height / scale);
-        imgWidth = Math.round(img.width / scale);
+        let dim = GetImageScale(img.width, img.height);
 
-        canvases.forEach(canvas =>{
-            canvas.height = imgHeight;
-            canvas.width = imgWidth;
-        })
+        imgWidth = dim[0];
+        imgHeight = dim[1];
 
-        for(let i = 0; i < canvases.length; i++)
+        for(let i = 0; i < canvs.length; i++)
         {
-            ctxs[i] = canvases[i].getContext('2d');
+            canvs[i].height = imgHeight;
+            canvs[i].width = imgWidth;
+            ctxs[i] = canvs[i].getContext('2d'); 
         }
 
         ctxs[0].drawImage(img, 0, 0, imgWidth, imgHeight);
 
         GetBlackandWhite(ctxs[0], ctxs[1]);
-        
-        Erosion(ctxs[1], ctxs[2], iteration / 4)
-        Dilation(ctxs[2], ctxs[3], iteration / 2)
-        Erosion(ctxs[3], ctxs[4], iteration / 4)
-
-        ctxs[5].putImageData(ctxs[4].getImageData(0, 0, imgWidth, imgHeight), 0, 0);
-
-        document.getElementById("label1").innerHTML = "Initial Erosion " + (iteration / 4) + " times"
-        document.getElementById("label2").innerHTML = "Dilation " + (iteration / 2) + " times"
-        document.getElementById("label3").innerHTML = "Final Erosion " + (iteration / 4) + " times"
     }
+}
+
+function ProcessImage()
+{
+    if(document.getElementById("custom").checked)
+    {
+        Erosion(ctxs[1], ctxs[3], ini_erosion)
+        Dilation(ctxs[3], ctxs[4], mid_dilation)
+        Erosion(ctxs[4], ctxs[5], fin_erosion)
+
+        document.getElementById("label1").innerHTML = "Initial Erosion " + (ini_erosion) + " times";
+        document.getElementById("label2").innerHTML = "Dilation " + (mid_dilation) + " times";
+        document.getElementById("label3").innerHTML = "Final Erosion " + (fin_erosion) + " times";
+    }
+    else 
+    {
+        Erosion(ctxs[1], ctxs[3], magnitude)
+        Dilation(ctxs[3], ctxs[4], magnitude * 2)
+        Erosion(ctxs[4], ctxs[5], magnitude)
+
+        document.getElementById("label1").innerHTML = "Initial Erosion " + (magnitude) + " times";
+        document.getElementById("label2").innerHTML = "Dilation " + (magnitude * 2) + " times";
+        document.getElementById("label3").innerHTML = "Final Erosion " + (magnitude) + " times";
+    }
+    
+    ctxs[2].putImageData(ctxs[5].getImageData(0, 0, imgWidth, imgHeight), 0, 0);
 }
 
 function GetBlackandWhite(source, canv)
@@ -94,6 +129,22 @@ function GetBlackandWhite(source, canv)
     }
 
     canv.putImageData(newImage, 0, 0);
+}
+
+function GetImageScale(width, height)
+{
+    let scale;
+
+    if(width > height)
+    {
+        scale = height / 300;
+    }
+    else
+    {
+        scale = width / 300;
+    }
+
+    return [Math.round(width / scale), Math.round(height / scale)]
 }
 
 function Erosion(source, canv, iteration)

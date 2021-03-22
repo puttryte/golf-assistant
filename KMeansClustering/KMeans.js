@@ -1,69 +1,102 @@
-//#region Global variable
+import TestImages from "../TestImages/TestImages.js";
 
-//Test Images 
 var imgHeight;
 var imgWidth;
-
-//number of canvases in the page
-var numOfCanvas = 8;
-
-//Test Images and scale based on display
-//var imgsrc = "../TestImages/test.jpeg"; var scale = 1.7;
-//var imgsrc = "../TestImages/test2.png"; var scale = 1.7;
-//var imgsrc = "../TestImages/test3.jpg"; var scale = 2;
-//var imgsrc = "../TestImages/test4.jpg"; var scale = 3.5;
-//var imgsrc = "../TestImages/test5.jpg"; var scale = 1.7;
-//var imgsrc = "../TestImages/test6.jpg"; var scale = 5;
-var imgsrc = "../TestImages/test7.jpg"; var scale = 4.8;
-
-//#endregion
+var canvs;
+var ctxs;
 
 function main()
 {
-    //Initialize the canvases.
-    var canvases = new Array(numOfCanvas);
+    var mySelect = document.getElementById("testImage");
 
-    for(let i = 0; i < numOfCanvas; i++)
+    for (let i = 0; i < TestImages.images.length; i++)
     {
-        let canvID = "#canv" + (i + 1);
-        canvases[i] = document.querySelector(canvID)
+        let option = document.createElement("option");
+        option.value = i;
+        option.text = TestImages.images[i].name;
+        mySelect.add(option);
     }
 
-    //Initialize Test image
-    var img = new Image();
-    img.src = imgsrc;
+    mySelect.value = 6;
+
+    document.getElementById("applybtn").addEventListener('click', Apply);
+
+    canvs = [
+        document.querySelector('#canv0'),
+        document.querySelector('#canv1'),
+        document.querySelector('#canv2'),
+        document.querySelector('#canv3'),
+        document.querySelector('#canv4'),
+        document.querySelector('#canv5'),
+        document.querySelector('#canv6'),
+        document.querySelector('#canv7'),
+    ];
+
+    ctxs = new Array(canvs.length);
+
+    Apply();
+}
+
+function Apply()
+{
+    let img = new Image();
+    img.src = TestImages.images[parseInt(document.getElementById("testImage").value)].source;
 
     //run function when the images is done loading
     img.onload = function(){
-        //Use scale to make it fit the page
-        imgHeight = Math.round(img.height / scale);
-        imgWidth = Math.round(img.width / scale);
 
-        let ctxs = new Array(canvases.length);
+        let dim = GetImageScale(img.width, img.height);
+
+        imgWidth = dim[0];
+        imgHeight = dim[1];
 
         //apply the test image's height and width to the canvas
         //get the context of the canvas
-        for(let i = 0; i < canvases.length; i++)
+        for(let i = 0; i < canvs.length; i++)
         {
-            canvases[i].height = imgHeight;
-            canvases[i].width = imgWidth;
-
-            ctxs[i] = canvases[i].getContext('2d');
+            canvs[i].height = imgHeight;
+            canvs[i].width = imgWidth;
+            ctxs[i] = canvs[i].getContext('2d');
         }
 
         //draws the original image to canvas
         ctxs[0].drawImage(img, 0, 0, imgWidth, imgHeight);
 
         //how many color separation
-        let clusters = 6;
+        let clusters = parseInt(document.getElementById("cluster").value);
 
         //how much would the model learn
-        let iteration = 10;
+        let iteration = parseInt(document.getElementById("iteration").value);
 
-        ProcessImageRGB(clusters, iteration, ctxs);
-        //ProcessImageCMYK(clusters, iteration, ctxs);
-        //ProcessImageHSV(clusters, iteration, ctxs);
+        switch(parseInt(document.getElementById("colorSpace").value))
+        {
+            case 0:
+                ProcessImageRGB(clusters, iteration, ctxs);
+                break;
+            case 1:
+                ProcessImageCMYK(clusters, iteration, ctxs);
+                break;
+            case 2:
+                ProcessImageHSV(clusters, iteration, ctxs);
+                break           
+        }
     }
+}
+
+function GetImageScale(width, height)
+{
+    let scale;
+
+    if(width > height)
+    {
+        scale = height / 300;
+    }
+    else
+    {
+        scale = width / 300;
+    }
+
+    return [Math.round(width / scale), Math.round(height / scale)]
 }
 
 function ProcessImageRGB(clusters, iteration, ctxs)
@@ -133,6 +166,7 @@ function ProcessImageRGB(clusters, iteration, ctxs)
             }
         }
 
+        
         //for each cluster, get the mean value of all the pixels assigned to the cluster
         for(let i = 0; i < centers.length; i++)
         {
@@ -168,9 +202,10 @@ function ProcessImageRGB(clusters, iteration, ctxs)
 
         x++;
     }
-
+    
+    //console.log(centers[0]);
     var index = 0;
-
+    
     //Apply the cluster value based on the final assignment
     for (let i = 0; i < pix.length; i += 4) {
         pix[i  ] = centers[assignments[index]][0];
@@ -303,11 +338,11 @@ function ProcessImageCMYK(clusters, iteration, ctxs)
         centers[i][1] = Math.round(cmyk[1]);
         centers[i][2] = Math.round(cmyk[2]);
         centers[i][3] = 255;
-
-        console.log(centers[i]);
     }
 
     var index = 0;
+
+
 
     //Apply the cluster value based on the final assignment
     for (let i = 0; i < pix.length; i += 4) {
@@ -466,10 +501,6 @@ function ProcessImageHSV(clusters, iteration, ctxs)
 
 function showClusters(numOfClusters, ctxs, centers)
 {
-    console.log(centers[0])
-    console.log(centers[1])
-    console.log(centers[2])
-    console.log(centers[3])
     for(let i = 0; i < numOfClusters; i++)
     {
         let imageData = ctxs[1].getImageData(0, 0, imgWidth, imgHeight);
