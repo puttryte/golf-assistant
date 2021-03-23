@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>reportWebVitals.ts</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="..\docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>reportWebVitals.ts</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*
+This file reports webvitals
+*/</span>
+<span class="hljs-keyword">import</span> { ReportHandler } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;web-vitals&#x27;</span>;
+
+<span class="hljs-keyword">const</span> reportWebVitals = <span class="hljs-function">(<span class="hljs-params">onPerfEntry?: ReportHandler</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (onPerfEntry &amp;&amp; onPerfEntry <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Function</span>) {
+    <span class="hljs-keyword">import</span>(<span class="hljs-string">&#x27;web-vitals&#x27;</span>).then(<span class="hljs-function">(<span class="hljs-params">{ getCLS, getFID, getFCP, getLCP, getTTFB }</span>) =&gt;</span> {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getFCP(onPerfEntry);
+      getLCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> reportWebVitals;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
