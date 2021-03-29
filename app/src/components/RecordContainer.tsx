@@ -10,6 +10,8 @@ interface ContainerProps { }
 const RecordContainer: React.FC<ContainerProps> = () => {
     const { doSinglePutt } = useMediaCapture(30);
     const { doTimelessPutts } = useMediaCapture(0);
+
+
   return (
     <div className="recording">
         <div>
@@ -24,7 +26,6 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                 ENDLESS
             </IonButton>
         </div>
-
     </div>
   );
 };
