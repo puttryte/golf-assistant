@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './Home.css';
-import RecordContainer from "../components/RecordContainer";
+import FeedbackAnalysis from "../components/FeedbackAnalysis";
 
 const Home: React.FC = () => {
   return (
@@ -16,7 +16,8 @@ const Home: React.FC = () => {
             <IonTitle size="large">PuttRyte</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <RecordContainer />
+        {/* <RecordContainer /> */}
+        <FeedbackAnalysis />
       </IonContent>
     </IonPage>
   );

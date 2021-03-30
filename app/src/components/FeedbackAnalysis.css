@@ -1,0 +1,9 @@
+.feedback {
+    display: flex;
+    justify-content: space-evenly;
+    text-align: center;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
