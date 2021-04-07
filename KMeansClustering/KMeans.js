@@ -188,6 +188,7 @@ function ProcessImageRGB(clusters, iteration, ctxs)
             if(count == 0)
             {
                 count++;
+                console.log("NO COUNT");
             }
 
             r /= count;
@@ -199,7 +200,7 @@ function ProcessImageRGB(clusters, iteration, ctxs)
             centers[i][2] = Math.round(b);
         }
 
-
+        console.log(centers)
         x++;
     }
     

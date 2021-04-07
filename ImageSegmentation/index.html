@@ -1,0 +1,181 @@
+<html>
+    <head>
+        <script 
+            src ="./ImageSegmentation.js" 
+            type = "module"
+        ></script>
+
+    </head>
+    <body style="text-align: center">
+        <div>
+            <span style = "margin: 5px;">
+                <label for = "testImage">Test Image: </label>
+                <select name ="testImage" id = "testImage">   
+                </select>
+            </span>
+            <span style = "margin: 5px;">
+                <label for = "colorSpace">Color Space: </label>
+                <select name ="colorSpace" id = "colorSpace">  
+                    <option value = 0 >RGB</option> 
+                    <option value = 1 selected>CMYK</option> 
+                    <option value = 2 >HSV</option> 
+                </select>
+            </span>
+        </div>
+        <div style = "margin: 5px;">
+            <button id = "applybtn">Apply</button>
+        </div>
+        <div>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1 >Original Image</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Normalized Image</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>After Bounding Box</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1>K-Means Cluster</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Cluster #1</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Cluster #2</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1>Cluster #1 after Denoised</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Cluster #1 after Morphologically Closed</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1>Grass Mask</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Golf Mask</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Putter Mask</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
+            <div style ="display: inline-flex;">
+                <div>
+                    <h1>Applied Grass Mask</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Applied Golf Mask</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+                <div>
+                    <h1>Applied Putter Mask</h1>
+                    <canvas 
+                    width="500" 
+                    height="500" 
+                    style= "
+                        border:1px solid #000000;
+                        "
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

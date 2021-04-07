@@ -1,10 +1,17 @@
+/*
+Script File for the Color Channel Separation and Analysis Page
+*/
+
+//Import the Json file for the Test Images
 import testImages from "../TestImages/TestImages.js";
 
+//Global Variables
 var imgHeight;
 var imgWidth;
 var canvs;
 var ctxs;
 
+/*Main Function*/
 function main()
 {
     var mySelect = document.getElementById("testImage");
@@ -43,6 +50,11 @@ function main()
     Apply();
 }
 
+
+// Name: Apply
+// Parameter: None
+// fuction the runs when the apply button is clicked.
+ 
 function Apply()
 {
     let testImage_Select = document.getElementById("testImage").value;
@@ -70,6 +82,8 @@ function Apply()
     }
 }
 
+//triggered when the user clicked on the canvas and the page labels 
+//would display the information of the pixels
 function labelPixel(event) {
     let mouseY;
     let mouseX;

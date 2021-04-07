@@ -382,6 +382,8 @@ function ProcessImage()
     }
 
     let final_mask_mean = GetMean(final_mask);
+    
+    final_mask_mean *= parseInt(document.getElementById("finalMaskMagnitude").value);
 
     imgData = ctxs[3].getImageData(0, 0, imgWidth, imgHeight);
 
@@ -412,7 +414,6 @@ function ProcessImage()
     {
         ApplyMask(ctxs[3], ctxs[4])
     }
-
 }
 
 function RGBChromatized(pixels)
