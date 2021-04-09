@@ -38,6 +38,10 @@ PuttRyte is a mobile application built with Ionic and React with an integrated
                              android:name="android.support.FILE_PROVIDER_PATHS"
                              android:resource="@xml/provider_paths"/>
                  </provider>```
+- FFMPEG
+    - Add FFMPEG to Path Variables
+        - https://www.thewindowsclub.com/how-to-install-ffmpeg-on-windows-10  
+                               
                  
         
 
@@ -52,6 +56,7 @@ In the 'app' directory:
 #### `npm install cordova-plugin-video-capture-plus`
 #### `npm install @ionic-native/video-capture-plus`
 #### `npm install @ionic-native/core`
+#### `npm install fluent-ffmpeg`  
 #### `npx cap sync`
 - Syncs dependencies from Gradle.
 
