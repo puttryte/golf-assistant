@@ -1,32 +1,47 @@
 import './RecordContainer.css';
-import {camera, trash, close, hourglass, hourglassOutline, golf} from 'ionicons/icons';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-    IonFab, IonButton, IonIcon, IonGrid, IonRow,
-    IonCol, IonImg, IonActionSheet } from '@ionic/react';
-import { useMediaCapture } from '../hooks/useMediaCapture';
-
+import {hourglassOutline, golf, camera} from 'ionicons/icons';
+import React from 'react';
+import {IonButton, IonIcon} from '@ionic/react';
+import { Plugins } from "@capacitor/core"
+import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
+const { CameraPreview } = Plugins;
 interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
-    const { doSinglePutt } = useMediaCapture(30);
-    const { doTimelessPutts } = useMediaCapture(0);
+
+    let result: any = [];
+
+    const cameraPreviewOptions: CameraPreviewOptions = {
+        position: 'rear',
+        height: 300,
+    };
+
+    const takePicture = async () => {
+        for (let i = 0; i < 5; i++) {
+            result[i] = await Plugins.CameraPreview.capture();
+            result[i].value = window.btoa(result[i].value);
+            console.log('data:image/jpeg;base64,' + window.atob(result[i].value))
+        }
+        Plugins.CameraPreview.stop();
+    };
 
 
   return (
     <div className="recording">
         <div>
-            <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => doSinglePutt()}>
+            <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => { Plugins.CameraPreview.start(cameraPreviewOptions) }}>
                 <IonIcon icon={golf} />
-                SINGLE
+                Start
             </IonButton>
         </div>
         <div>
-            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => doTimelessPutts()}>
+            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
                 <IonIcon icon={hourglassOutline} />
-                ENDLESS
+                Capture
             </IonButton>
         </div>
     </div>
+
   );
 };
 

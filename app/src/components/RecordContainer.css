@@ -25,3 +25,7 @@
 .recording a {
   text-decoration: none;
 }
+
+.content-camera-preview {
+  --background: transparent;
+}

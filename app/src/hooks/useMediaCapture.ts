@@ -25,20 +25,21 @@ export function useMediaCapture(duration:any) {
             overlayText: 'Start Putting!'
         };
         let capture:any = await VideoCapturePlus.captureVideo(options);
+        console.log(capture[0] as MediaFile)
 
-        video = capture[0] as MediaFile;
-
-        let path = video.fullPath.substring(0, video.fullPath.lastIndexOf("/"));
-
-        let convertedVideo = new ffmpeg(video.fullPath);
-        convertedVideo
-            .format('avi')
-            .save(path + "test.avi");
-        console.log(convertedVideo.fullPath);
-
-        return convertedVideo;
-
-
+        // video = capture[0] as MediaFile;
+        //
+        // let path = video.fullPath.substring(0, video.fullPath.lastIndexOf("/"));
+        //
+        // let convertedVideo = new ffmpeg(video.fullPath);
+        // convertedVideo
+        //     .format('avi')
+        //     .save(path + "test.avi");
+        // console.log(convertedVideo.fullPath);
+        //
+        // return convertedVideo;
+        //
+        //
 
     };
 
