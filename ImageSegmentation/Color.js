@@ -1,5 +1,10 @@
 export default class Color
 {
+    //converts RGB to CMYK
+    //Parameter:red     : int
+    //          green   : int
+    //          blue    : int
+    //sorce: https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
     static RGBtoCMYK(red, green, blue)
     {
         let cyan, magenta, yellow, key;
@@ -9,13 +14,28 @@ export default class Color
         let blue_p = blue/255;
 
         key = 1 - Math.max(red_p, green_p, blue_p);
-        cyan = (1 - red_p - key) / (1 - key)
-        magenta = (1 - green_p - key) / (1 - key);
-        yellow = (1 - blue_p - key) / (1 - key);
+
+        if(key == 1)
+        {
+            cyan = 0;
+            magenta = 0;
+            yellow = 0;
+        }
+        else
+        {
+            cyan = (1 - red_p - key) / (1 - key)
+            magenta = (1 - green_p - key) / (1 - key);
+            yellow = (1 - blue_p - key) / (1 - key);
+        }
 
         return [cyan, magenta, yellow, key];
     }
 
+    //converts RGB to HSV
+    //Parameter:red     : int
+    //          green   : int
+    //          blue    : int
+    //source: https://www.rapidtables.com/convert/color/rgb-to-hsv.html
     static RGBtoHSV(red, green, blue)
     {
         let hue, saturation, value;
@@ -59,6 +79,12 @@ export default class Color
         return [hue, saturation, value];
     }
 
+    //converts CMYK to RGB
+    //Parameter:vyan    : int
+    //          magenta : int
+    //          yellow  : int
+    //          key     : int
+    //source: https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
     static CMYKtoRGB(cyan, magenta, yellow, key)
     {
         let red = 255 * (1 - cyan) * (1 - key);
@@ -68,6 +94,11 @@ export default class Color
         return [red, green, blue];
     }
 
+    //converts HSV to RGB
+    //Parameter:hue         : int
+    //          saturation  : int
+    //          value       : int
+    //source: https://www.rapidtables.com/convert/color/hsv-to-rgb.html
     static HSVtoRGB(hue, saturation, value)
     {
         if(hue < 0)

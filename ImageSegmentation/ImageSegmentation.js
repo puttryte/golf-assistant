@@ -2,24 +2,39 @@ import TestImages from "../TestImages/TestImages.js";
 import ImageProcessing from "./ImageProcessing.js";
 import KMeans from "./KMeans.js";
 
+//for keeping up a record of time of each processes.
 var startTime = Date.now();
 var currentTime = Date.now();
 
+//easier access for the html canvases
 var canvases;
 var ctxs;
-var imageSize = 300;
 
+//base size of each image while keeping the image ratio
+//the bigger the base the more pixels it would have to process
+//a very small base would make the process inaccurate
+var imageSize = 200;
+
+//the average brightness of each image will have before going through the process
 var normalBrightness = 80;
 
+//for k-means algorithm
+//clusters are the number of color the image is separated with.
+//2 clusters for separating the grass with everything else.
+//iteration is the number of times the algorithm will run. 
+//the higher the number, the more accurate it would be. 
 var cluster = 2;
 var iteration = 10;
 
+//for denoising and morphological closing.
+//the lower the number, the less processing it would do but the image would keep it integrity.
 var numOfErosion = 1;
 var numOfDilation = 1;
 
-
+//Start of the Process. 
 function main()
 {
+    //set up the drop selection base on the TestImages.js
     var mySelect = document.getElementById("testImage");
 
     for (let i = 0; i < TestImages.images.length; i++)
@@ -30,30 +45,39 @@ function main()
         mySelect.add(option);
     }
 
+    //set the default value of the drop selection
     mySelect.value = 6;
 
+    //declare a behavior of the apply button
     document.getElementById("applybtn").addEventListener('click', Apply);
 
     canvases = document.getElementsByTagName("canvas");
     ctxs = new Array(canvases.length);
 
+    //start the proccess with the default image 
     Apply();
 }
 
+//fuction gets trigger when the apply button is pressed.
 function Apply()
 { 
+    //for record timing purposes
     console.clear();
     startTime = Date.now();
     currentTime = Date.now();
 
+    //get the image selected and declare the image variable.
     let mySelect = document.getElementById("testImage");
     let image = new Image();
     image.src = TestImages.images[mySelect.value].source;
 
+    //start the function when the image is done loading
     image.onload = function()
     {
+        //scale the image
         let size = ImageProcessing.GetImageScale(image.width, image.height, imageSize);
 
+        //using the dimension of scaled image, scale all the canvases.
         for(let i = 0; i < canvases.length; i++)
         {
             canvases[i].width = size[0];
@@ -62,25 +86,33 @@ function Apply()
             ctxs[i].imageSmoothinEnabled = true;
         }
 
+        //output the original image
         ctxs[0].drawImage(image, 0, 0, size[0], size[1]);
 
+        //record time
         console.log("Showing Original Image: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //normalize the image's brighness level
         ImageProcessing.NormalizeImageBrightness(ctxs[0], ctxs[1], normalBrightness);
 
+        //record time.
         console.log("After normalizing the image: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //preset canvases to use.
         let temp_ctxs = [
-            ctxs[1],
-            ctxs[3],
-            ctxs[4],
-            ctxs[5]
+            ctxs[1], //normal image:    source
+            ctxs[3], //kmeans image:    output
+            ctxs[4], //cluster 1 image: output
+            ctxs[5]  //cluster 2 image: output
         ]
 
+        //get the selected colorspace to use, defaulted to CMYK
         let colorSpace = parseInt(document.getElementById("colorSpace").value);
 
+        //call kmeans algorithm.
+        //author' note: could refactor the his into one function but it easier and faster to have 3 copied modified a little bit.
         switch(colorSpace)
         {
             case 0:
@@ -94,59 +126,93 @@ function Apply()
                 break;
         }
 
+        //record time.
         console.log("After K-means Algorithm: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //denoise the image.
+        //erode the image and inflate it.
+        //pixels with radius equal to the numOfErosion should disappears.
         ImageProcessing.Erosion(ctxs[4], ctxs[6], numOfErosion);
         ImageProcessing.Dilation(ctxs[6], ctxs[6], numOfDilation);
+
+        //record time
 
         console.log("After Denoising Clusters: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //mophological closing
+        //infate it then erode it back
+        //any holes or cravases would get smaller by the number equal to the numOfDilation
         ImageProcessing.Dilation(ctxs[6], ctxs[7], numOfDilation);
         ImageProcessing.Erosion(ctxs[7], ctxs[7], numOfErosion);
 
+        //record time
         console.log("After Morphologically Closing: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //sepated the golf ball and the putter
         HorizontalSeparation(ctxs[7], ctxs[9], ctxs[10]);
 
+        console.log("After Separating Objects: " + (Date.now() - currentTime) + " miliseconds")
+        currentTime = Date.now();
+
+        //denoise the separated parts
         ImageProcessing.Erosion(ctxs[9], ctxs[9], 2);
         ImageProcessing.Dilation(ctxs[9], ctxs[9], 2);
 
         ImageProcessing.Erosion(ctxs[10], ctxs[10], 2);
         ImageProcessing.Dilation(ctxs[10], ctxs[10], 2);
 
+        //get the grass mask
         InvertCanvasBW(ctxs[7], ctxs[8]);
 
+        //record time.
+        console.log("After prossecing the masks: " + (Date.now() - currentTime) + " miliseconds")
+        currentTime = Date.now();
+
+        //get the original images masked parts.
         ApplyMask(ctxs[0], ctxs[8], ctxs[11]);
         ApplyMask(ctxs[0], ctxs[9], ctxs[12]);
         ApplyMask(ctxs[0], ctxs[10], ctxs[13]);
 
-        console.log("After Separating Objects: " + (Date.now() - currentTime) + " miliseconds")
+        //recode time.
+        console.log("After applying the masks: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //apply a bounding box based the mask.
         ctxs[2].drawImage(image, 0, 0, size[0], size[1]);
         BoundingBox(ctxs[9], ctxs[2], 1);
         BoundingBox(ctxs[10], ctxs[2], 0);
 
+        //record time
         console.log("Showing Bounding Box: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
+        //record total time
         console.log("Total time: " + (Date.now() - startTime) + " miliseconds")
     }
 }
 
+//a brute for approach of separting the ball and the putter.
+//only work in initial position of the put
+//assume the golf is on the left and the putter is on the right.
+//Parameter:source  : CanvasRenderingContext2D : input canvas
+//          ctx1    : CanvasRenderingContext2D : output canvas
+//          ctx2    : CanvasRenderingContext2D : output canvas
 function HorizontalSeparation(source, ctx1, ctx2)
 {
+    //get the image dimensions
     let width = source.canvas.clientWidth;
     let height = source.canvas.clientHeight;
     let row = width * 4;
 
+    //get the pixel data
     let imageData = source.getImageData(0, 0, width, height);
 
     let verticalCount = new Array(width).fill(0);
 
+    //count each white pixel in a column
     for(let i = 0; i < imageData.data.length; i += row)
     {
         for(let j = i; j < (i + row); j += 4)
@@ -161,6 +227,8 @@ function HorizontalSeparation(source, ctx1, ctx2)
     let start = 0;
     let end = 0;
 
+    //get first instance of a white pixel
+    //expects the left side of the ball
     for(let i = 0; i < verticalCount.length; i++)
     {
         if(verticalCount[i] != 0)
@@ -170,6 +238,8 @@ function HorizontalSeparation(source, ctx1, ctx2)
         }
     }
 
+    //get last instance of a white pixel
+    //expects the right side of the putter
     for(let i = (verticalCount.length - 1); i > 0; i--)
     {
         if(verticalCount[i] != 0)
@@ -183,11 +253,15 @@ function HorizontalSeparation(source, ctx1, ctx2)
     let count = 0;
     let index = 0;
 
+    //try to predict where the ball end and the putter to start.
+    //start of the left side of the ball and get the avarage white pixels per column.
+    //if the next column is double the avarage, then that where the putter should be.
     for(let i = start; i <= end; i++)
     {
         total += verticalCount[i];
         count++;
 
+        //dont check until the 11th column
         if(i > (start + 10))
         {
             if((total / count) / verticalCount[i+1] < 0.5)
@@ -198,6 +272,7 @@ function HorizontalSeparation(source, ctx1, ctx2)
         }
     }
 
+    //black out the right of the prediction. for the ball.
     ctx1.putImageData(imageData, 0, 0)
 
     ctx1.beginPath();
@@ -207,6 +282,7 @@ function HorizontalSeparation(source, ctx1, ctx2)
     ctx1.fill();
     ctx1.stroke();
 
+    //black out the left side of the prediction fro the putter.
     ctx2.putImageData(imageData, 0, 0)
 
     ctx2.beginPath();
@@ -217,6 +293,9 @@ function HorizontalSeparation(source, ctx1, ctx2)
     ctx2.stroke();
 }
 
+//the funtion inverts a black and white(not grayscale) image
+//Parameter:source  : CanvasRenderingContext2D : input canvas
+//          ctx     : CanvasRenderingContext2D : output canvas
 function InvertCanvasBW(source, ctx)
 {
     let imageData = source.getImageData(0, 0, source.canvas.clientWidth, source.canvas.clientHeight);
@@ -242,6 +321,11 @@ function InvertCanvasBW(source, ctx)
     ctx.putImageData(imageData, 0, 0)
 }
 
+//the fuction used a black and white images(not grayscale) to mask another image
+//the black parts will stay black while the white part will keep the source image's color.
+//Parameter:source  : CanvasRenderingContext2D : input canvas
+//          mask    : CanvasRenderingContext2D : input canvas
+//          ctx     : CanvasRenderingContext2D : output canvas
 function ApplyMask(source, mask, ctx)
 {
     let imageData = source.getImageData(0, 0, source.canvas.clientWidth, source.canvas.clientHeight);
@@ -260,6 +344,11 @@ function ApplyMask(source, mask, ctx)
     ctx.putImageData(maskData, 0, 0)
 }
 
+//apply a bouding box around the white parts of a black and white (not grayscale) image
+//mod parameter is for a box or a circle bounding "box"
+//Parameter:mask    : CanvasRenderingContext2D : input canvas
+//          ctx     : CanvasRenderingContext2D : output canvas
+//          mod     : int                      : 0 for rectangle, 1 for circle
 function BoundingBox(mask, ctx, mod)
 {
     let coor = GetBBCoor(mask);
@@ -281,6 +370,9 @@ function BoundingBox(mask, ctx, mod)
     ctx.stroke();
 }
 
+//Get the top left and bottom right XY coordinates of the white parts of the mask
+//Parameter:source  : CanvasRenderingContext2D  : input canvas
+//Return   :        : Int Array                 : length of 4
 function GetBBCoor(source)
 {
     let x1, x2, y1, y2;
@@ -294,6 +386,7 @@ function GetBBCoor(source)
     let verticalCount = new Array(width).fill(0);
     let horizontalCount = new Array(height).fill(0);
 
+    //create a vertical and horizontal histogram
     for(let i = 0; i < maskData.data.length; i += row)
     {
         for(let j = i; j < (i + row); j += 4)
@@ -345,4 +438,5 @@ function GetBBCoor(source)
     return [x1, x2, y1, y2];
 }
 
+//call main to start the script.
 main();     

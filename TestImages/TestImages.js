@@ -29,20 +29,8 @@ export default {
             source: "../TestImages/test7.jpg",
         },
         {
-            name: "test8.png",
-            source: "../TestImages/test8.png",
-        },
-        {
             name: "Capture.JPG",
             source: "../TestImages/Capture.JPG",
-        },
-        {
-            name: "White Image",
-            source: "../TestImages/WhiteImage.png",
-        },
-        {
-            name: "Black Image",
-            source: "../TestImages/BlackImage.png",
         }
     ]
 };

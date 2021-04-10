@@ -3,13 +3,19 @@ import Color from "./Color.js";
 
 export default class KMeans
 {
+    //Do a K-means algorithm to the image to do a color segmentation
+    //Parameter: ctxs           : CanvasRenderingContext2D Array of 4   : [input, output(full image), output(cluser 1), output(cluster 2)]
+    //           numOfCluseter  : number                                : number of color to separate the image
+    //           maxIteration   : number                                : number of times the algorithm would run
     static ProcessImageRGB(ctxs, numOfCluster, maxIteration)
     {
+        //get image dimension
         let imgWidth = ctxs[0].canvas.clientWidth;
         let imgHeight = ctxs[0].canvas.clientHeight;
 
         let imgData = ctxs[0].getImageData(0, 0, imgWidth, imgHeight);
         
+        //Initialize arrays
         let cluster = new Array(numOfCluster);
         let clusterCount = new Array(numOfCluster).fill(0);
         let pixels = new Array(imgWidth * imgHeight);
@@ -23,17 +29,26 @@ export default class KMeans
             pixels[i] = new Array(3).fill(0);
         }
 
+        //initial color difference based on the number of cluster
         let colorDelta = Math.round(255 / (numOfCluster - 1));
+
+        //first color starts with black
         let color = 0;
 
         let iteration = 0;
 
+        //declared initial cluster color
+        //example: cluster = 3 delta = 128 
+        //cluster 1 = [0, 0, 0]
+        //cluster 2 = [128, 128, 128]
+        //cluster 3 = [256, 256, 256]
         for(let i = 0; i < cluster.length; i++)
         {
             cluster[i] = [color, color, color];
             color += colorDelta;
         }
 
+        //copy the image Data so the original image data wont get manipulated
         for(let i = 0; i < pixels.length; i++)
         {
             pixels[i][0] = imgData.data[(i*4)];
@@ -41,8 +56,10 @@ export default class KMeans
             pixels[i][2] = imgData.data[(i*4) + 2];
         }
 
+        //start of the algorithm
         while(iteration < maxIteration)
         {
+            //for each pixel, find the Ecludean Distance to each cluster and assign the pixel to the nearest cluster
             for(let i = 0; i < pixels.length; i++)
             {
                 let minDistance = Number.MAX_SAFE_INTEGER;
@@ -62,6 +79,7 @@ export default class KMeans
                 }   
             }
 
+            //for each cluster, get the average color of all the assign pixels.
             for(let i = 0; i < cluster.length; i++)
             {
                 let count = 0;
@@ -89,15 +107,18 @@ export default class KMeans
                     cluster[i] = [r, g, b];
                 }
 
+                //at the last iteration, give the count of all the pixels assign to the cluster
                 if((iteration + 1) == maxIteration)
                 {
                     clusterCount[i] = count;
                 }
             }
 
+            //repeat until max iteration is reached
             iteration++;
         }
 
+        //changed the color of the original image's pixels based on the cluster it was assigned to.
         for(let i = 0; i < imgData.data.length; i += 4)
         {
             imgData.data[i] = cluster[assignment[i / 4]][0];
@@ -105,8 +126,11 @@ export default class KMeans
             imgData.data[i + 2] = cluster[assignment[i / 4]][2];
         }
 
+        //outputs the new color separated image
         ctxs[1].putImageData(imgData, 0, 0);
 
+        //sort the cluster based on the amount of pixels assign to it.
+        //min first
         for(let i = 0; i < clusterCount.length; i++)
         {
             for(let j = (i+1); j < clusterCount.length; j++)
@@ -124,10 +148,13 @@ export default class KMeans
             }
         }
 
+        //outputs the cluster to each of their own canvas
         this.ShowCluster(cluster[0], ctxs[1], ctxs[2])
         this.ShowCluster(cluster[1], ctxs[1], ctxs[3])
     }
 
+    //same process as the RBG but using CMYK color space
+    //see comment below to the diffenrence
     static ProcessImageCMYK(ctxs, numOfCluster, maxIteration)
     {
         let imgWidth = ctxs[0].canvas.clientWidth;
@@ -161,11 +188,9 @@ export default class KMeans
 
         for(let i = 0; i < pixels.length; i++)
         {
-            let cmyk = Color.RGBtoCMYK(
-                imgData.data[(i * 4)],
-                imgData.data[(i * 4) + 1],
-                imgData.data[(i * 4) + 2]);
-            
+            //convert to RGB to CMYK
+            let cmyk = Color.RGBtoCMYK( imgData.data[(i * 4)], imgData.data[(i * 4) + 1], imgData.data[(i * 4) + 2], i);
+
             pixels[i][0] = cmyk[0];
             pixels[i][1] = cmyk[1];
             pixels[i][2] = cmyk[2];
@@ -180,6 +205,7 @@ export default class KMeans
 
                 for(let j = 0; j < cluster.length; j++)
                 {
+                    //use 4 XY coordinates
                     let distance = Utility.EuclideanDistance4(
                         pixels[i][0], pixels[i][1], pixels[i][2], pixels[i][3],
                         cluster[j][0], cluster[j][1], cluster[j][2], cluster[j][3]
@@ -234,6 +260,7 @@ export default class KMeans
 
         for(let i = 0; i < imgData.data.length; i += 4)
         {
+            //convert CMYK cluster color to RGB
             let rgb = Color.CMYKtoRGB(
                 cluster[assignment[i / 4]][0],
                 cluster[assignment[i / 4]][1],
@@ -249,6 +276,7 @@ export default class KMeans
 
         for(let i = 0; i < cluster.length; i++)
         {
+            //convert CMYK cluster color to RGB
             let cmyk = Color.CMYKtoRGB(
                 cluster[i][0],
                 cluster[i][1],
@@ -282,6 +310,7 @@ export default class KMeans
         this.ShowCluster(cluster[1], ctxs[1], ctxs[3])
     }
 
+    //same process as the CMYK but using HSV color space
     static ProcessImageHSV(ctxs, numOfCluster, maxIteration)
     {
         let imgWidth = ctxs[0].canvas.clientWidth;
@@ -434,6 +463,10 @@ export default class KMeans
         this.ShowCluster(cluster[1], ctxs[1], ctxs[3])
     }
 
+    //separate the pixels with the same color as the color input and output a black and white image (not grayscale) to ctx
+    //Parameter: color  : int Array                 : RGB color
+    //           source : CanvasRenderingContext2D  : input canvas
+    //           ctx    : CanvasRenderingContext2D  : output canvas
     static ShowCluster(color, source, ctx)
     {
         let imgData = source.getImageData(0, 0, source.canvas.clientWidth, source.canvas.clientHeight);
