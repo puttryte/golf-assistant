@@ -2,10 +2,15 @@ import Utility from "./Utility.js";
 
 export default class ImageProcessing
 {
-    static hitMarker = [ 255, 255, 255, 
-        255, 255, 255, 
-        255, 255, 255];
+    //being used for Erosion and Dilation
+    //3 x 3 hit square
+    static hitMarker = [255, 255, 255, 255, 255, 255, 255, 255, 255];
 
+    //Scale the input dimension with base as the minimum value while keeping the dimension ratio
+    //Parameter: width  : int   
+    //           height : int
+    //           base   : int
+    //Return:    int Array  : length of 2
     static GetImageScale(width, height, base)
     {
         if(width > height)
@@ -17,7 +22,6 @@ export default class ImageProcessing
             return [base, Math.round((height * base) / width)]
         }
     }
-
     
     //Equals the average of all the pixels to the number given
     //Parameter: source : CanvasRenderingContext2D  : input canvas
