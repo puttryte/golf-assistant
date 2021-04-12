@@ -1,13 +1,20 @@
 import './RecordContainer.css';
 import {hourglassOutline, golf, camera} from 'ionicons/icons';
 import React from 'react';
+import {useState} from 'react';
 import {IonButton, IonIcon} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
+import { Redirect} from 'react-router-dom';
+
 const { CameraPreview } = Plugins;
 interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
+
+    let [currentImg, setCurrentImg] = useState("");
+
+    let imgArr = [];
 
     let result: any = [];
 
@@ -17,23 +24,26 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     };
 
     const takePicture = async () => {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 20; i++) {
             result[i] = await Plugins.CameraPreview.capture();
             result[i].value = window.btoa(result[i].value);
-            console.log('data:image/jpeg;base64,' + window.atob(result[i].value))
+            console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
+            setCurrentImg('data:image/jpeg;base64,' + window.atob(result[i].value));
+            imgArr.push(currentImg);
         }
         Plugins.CameraPreview.stop();
+        <Redirect to = "/loading"/>
     };
 
 
   return (
     <div className="recording">
-        <div>
+        {/* <div>
             <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => { Plugins.CameraPreview.start(cameraPreviewOptions) }}>
                 <IonIcon icon={golf} />
                 Start
             </IonButton>
-        </div>
+        </div> */}
         <div>
             <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
                 <IonIcon icon={hourglassOutline} />
