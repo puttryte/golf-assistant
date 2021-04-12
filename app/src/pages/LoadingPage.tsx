@@ -1,11 +1,23 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-// import './Home.css';
+import LoadingComponent from "../components/LoadingComponent";
 
 const LoadingPage: React.FC = () => {
   return (
-    <div>
-        hi
-    </div>
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>PuttRyte</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">PuttRyte</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <LoadingComponent />
+      </IonContent>
+    </IonPage>
   );
 };
 

@@ -5,12 +5,15 @@ import {useState} from 'react';
 import {IonButton, IonIcon} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
-import { Redirect} from 'react-router-dom';
+import LoadingComponent from './LoadingComponent'
+import { useHistory } from 'react-router-dom';
 
 const { CameraPreview } = Plugins;
 interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
+
+    let history = useHistory();
 
     let [currentImg, setCurrentImg] = useState("");
 
@@ -32,7 +35,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             imgArr.push(currentImg);
         }
         Plugins.CameraPreview.stop();
-        <Redirect to = "/loading"/>
+        console.log("you got here");
+        history.push("/loading");
     };
 
 
