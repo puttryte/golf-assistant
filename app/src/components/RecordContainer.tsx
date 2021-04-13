@@ -6,7 +6,7 @@ import {IonButton, IonIcon} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 import LoadingComponent from './LoadingComponent'
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 const { CameraPreview } = Plugins;
 interface ContainerProps { }
@@ -17,7 +17,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     let [currentImg, setCurrentImg] = useState("");
 
-    let imgArr = [];
+    let imgArr = [''];
 
     let result: any = [];
 
@@ -27,16 +27,16 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     };
 
     const takePicture = async () => {
-        for (let i = 0; i < 20; i++) {
-            result[i] = await Plugins.CameraPreview.capture();
-            result[i].value = window.btoa(result[i].value);
-            console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
-            setCurrentImg('data:image/jpeg;base64,' + window.atob(result[i].value));
-            imgArr.push(currentImg);
-        }
-        Plugins.CameraPreview.stop();
+        // for (let i = 0; i < 20; i++) {
+        //     result[i] = await Plugins.CameraPreview.capture();
+        //     result[i].value = window.btoa(result[i].value);
+        //     console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
+        //     setCurrentImg('data:image/jpeg;base64,' + window.atob(result[i].value));
+        //     imgArr.push(currentImg);
+        // }
+        // Plugins.CameraPreview.stop();
         console.log("you got here");
-        history.push("/loading");
+    // });
     };
 
 
@@ -53,6 +53,9 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                 <IonIcon icon={hourglassOutline} />
                 Capture
             </IonButton>
+        </div>
+        <div>
+        <LoadingComponent />
         </div>
     </div>
 
