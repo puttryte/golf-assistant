@@ -2,13 +2,14 @@ import './RecordContainer.css';
 import {hourglassOutline, golf, camera} from 'ionicons/icons';
 import React from 'react';
 import {useState} from 'react';
-import {IonButton, IonIcon} from '@ionic/react';
+import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 import LoadingComponent from './LoadingComponent'
 import { useHistory, Redirect } from 'react-router-dom';
 import {Modal} from 'antd';
 import 'antd/dist/antd.css'
+import {GlobalContext} from './GlobalContext'
 
 
 const { CameraPreview } = Plugins;
@@ -16,25 +17,34 @@ interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
 
-    let history = useHistory();
+    const {
+        getImgArr,
+        updateImgArr
+    } = GlobalContext();
 
-    let [imgArr, setImgArr] = useState([""]);
+    let history = useHistory();
 
     let result: any = [];
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    let imgArrOut: String[] = [];
+
+    // const [isModalVisible, setIsModalVisible] = useState(false);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
         height: 300,
     };
 
-    const handleOk = () => {
-        setIsModalVisible(false);
-    }
+    // const handleOk = () => {
+    //     setIsModalVisible(false);
+    // }
 
-    const handleCancel = () => {
-        setIsModalVisible(false);
+    // const handleCancel = () => {
+    //     setIsModalVisible(false);
+    // }
+
+    const redirectToNext = () => {
+        history.push('/loading');
     }
 
     const takePicture = () => {
@@ -46,8 +56,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         //     imgArr.push(currentImg);
         // }
         // Plugins.CameraPreview.stop();
-        console.log("you got here");
-        setIsModalVisible(true);
+        updateImgArr("hey");
+        console.log(getImgArr());
     // });
     };
 
@@ -65,10 +75,14 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                 <IonIcon icon={hourglassOutline} />
                 Capture
             </IonButton>
+            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { redirectToNext() }}>
+                <IonIcon icon={golf} />
+                Go to next
+            </IonButton>
         </div>
-        <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
+        {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
                 <p>hello</p>
-        </Modal>
+        </Modal> */}
     </div>
 
   );
