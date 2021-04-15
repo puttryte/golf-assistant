@@ -7,6 +7,9 @@ import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 import LoadingComponent from './LoadingComponent'
 import { useHistory, Redirect } from 'react-router-dom';
+import {Modal} from 'antd';
+import 'antd/dist/antd.css'
+
 
 const { CameraPreview } = Plugins;
 interface ContainerProps { }
@@ -15,18 +18,26 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     let history = useHistory();
 
-    let [currentImg, setCurrentImg] = useState("");
-
-    let imgArr = [''];
+    let [imgArr, setImgArr] = useState([""]);
 
     let result: any = [];
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
         height: 300,
     };
 
-    const takePicture = async () => {
+    const handleOk = () => {
+        setIsModalVisible(false);
+    }
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    }
+
+    const takePicture = () => {
         // for (let i = 0; i < 20; i++) {
         //     result[i] = await Plugins.CameraPreview.capture();
         //     result[i].value = window.btoa(result[i].value);
@@ -36,6 +47,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         // }
         // Plugins.CameraPreview.stop();
         console.log("you got here");
+        setIsModalVisible(true);
     // });
     };
 
@@ -54,9 +66,9 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                 Capture
             </IonButton>
         </div>
-        <div>
-        <LoadingComponent />
-        </div>
+        <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
+                <p>hello</p>
+        </Modal>
     </div>
 
   );
