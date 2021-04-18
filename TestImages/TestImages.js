@@ -29,6 +29,14 @@ export default {
             source: "../TestImages/test7.jpg",
         },
         {
+            name: "test8.jpg",
+            source: "../TestImages/test8.jpg",
+        },
+        {
+            name: "test9.jpg",
+            source: "../TestImages/test9.jpg",
+        },
+        {
             name: "Capture.JPG",
             source: "../TestImages/Capture.JPG",
         }

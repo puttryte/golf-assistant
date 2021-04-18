@@ -185,7 +185,7 @@ export default class KMeans
             cluster[i] = [color, color, color, color];
             color += colorDelta;
         }
-
+        
         for(let i = 0; i < pixels.length; i++)
         {
             //convert to RGB to CMYK

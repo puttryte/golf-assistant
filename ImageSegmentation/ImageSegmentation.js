@@ -438,5 +438,176 @@ function GetBBCoor(source)
     return [x1, x2, y1, y2];
 }
 
+function TestSeparation(source, ctx, ctx1)
+{
+    let imgWidth = source.canvas.clientWidth;
+    let imgHeight = source.canvas.clientHeight;
+    let imageData = source.getImageData(0, 0, imgWidth, imgHeight);
+    let copyData = source.getImageData(0, 0, imgWidth, imgHeight);
+    let startPixel = 0;
+
+    // Direction
+    // [0] [1] [2]
+    // [7] [X] [3]
+    // [6] [5] [4]
+
+    let directions = [
+        (-1 * (imgWidth * 4) - 4),
+        (-1 * (imgWidth * 4)),
+        (-1 * (imgWidth * 4) + 4),
+        (4),
+        ((imgWidth * 4) + 4),
+        ((imgWidth * 4)),
+        ((imgWidth * 4) - 4),
+        (-4)
+    ];
+
+    //turn the image into black
+    for(let i = 0; i < copyData.data.length; i += 4)
+    {
+        copyData.data[i + 0] = 0;
+        copyData.data[i + 1] = 0;
+        copyData.data[i + 2] = 0;
+        copyData.data[i + 3] = 255;
+    }
+    
+    //get the first white pixel
+    for(let i = 0; i < imageData.data.length; i += 4)
+    {
+        if(imageData.data[i] == 255)
+        {
+            startPixel = i;
+            break;
+        }
+    }
+
+    let currentPixel = startPixel;
+    let direction = 0;
+    let found = false;
+
+    //Get the edge of the segment
+    do
+    {
+        found = false;
+        //turn the pixel to white
+        copyData.data[currentPixel] = 255;
+        copyData.data[currentPixel + 1] = 255;
+        copyData.data[currentPixel + 2] = 255;
+
+        while(!found)
+        {
+            //found the pixel on the direction
+            if(imageData.data[currentPixel + directions[direction]] == 255)
+            {
+                found = true;
+                currentPixel += directions[direction];
+
+                //turn direction 135 degree counter clock wise
+                direction -= 3;
+                if(direction < 0)
+                {
+                    direction += 8;
+                }
+            }
+            //turn clockwise
+            else 
+            {
+                direction++;
+
+                if(direction > 7)
+                {
+                    direction = 0;
+                }
+            }
+        }
+    }
+    while(currentPixel != startPixel)
+
+    //#region 
+    // fill in the outline of the edge
+    for(let i = 0; i < copyData.data.length; i += (imgWidth * 4))
+    {
+        let pixel = 0;
+        let count = 0;
+        let whitePixels = [];
+
+        //find the points where the white pixels are in a row
+        for(let j = i; j < (i + (imgWidth * 4)); j += 4)
+        {
+            if(copyData.data[j] == 255)
+            {
+                if(pixel == 0)
+                {
+                    pixel = j;
+                }
+                count++;
+            }
+            else if(pixel != 0)
+            {
+                whitePixels.push([pixel, count]);
+                pixel = 0;
+                count = 0;
+            }
+        }
+
+        let fillInColor = [255, 0, 0];
+
+        //find and fill in pairs of points
+        while(whitePixels.length > 1)
+        {
+            let start = 0;
+            let end = 0;
+
+            //if the amount of points are even it is guaranteed the first and second are pairs
+            if((whitePixels.length % 2) == 0)
+            {
+                start = whitePixels[0][0] + 4;
+                end = whitePixels[1][0];
+
+                if(whitePixels[0][1] > 1)
+                {
+                    start += (whitePixels[0][1] - 1) * 4;
+                }
+
+                fillIn(copyData, start, end, fillInColor);
+
+                whitePixels.splice(0, 2);
+            }
+            //the amount of points are odd
+            else 
+            {
+                if((whitePixels[1][1] + whitePixels[2][1]) == 2)
+                {
+                    whitePixels.splice(0, 1);
+                }
+                else if(whitePixels[0][1] == 1)
+                {
+                    let marker = whitePixels[1];
+                    whitePixels.splice(1, 1, [marker[0], 1], [(marker[0] + 4), (marker[1] - 1)]);
+                }
+                else
+                {
+                    let marker = whitePixels[1];
+                    whitePixels.splice(1, 1, [marker[0], 1], [(marker[0] + 4), (marker[1] - 1)]);
+                }
+            }
+        }
+    }
+    //#endregion
+
+    ctx.putImageData(copyData, 0, 0);
+    ctx1.putImageData(imageData, 0, 0);
+}
+
+function fillIn(imageData, start, end, color)
+{
+    for(let i = start; start < end; start += 4)
+    {
+        imageData.data[start] = color[0];
+        imageData.data[start + 1] = color[1];
+        imageData.data[start + 2] = color[2];
+    }
+}
+
 //call main to start the script.
 main();     
