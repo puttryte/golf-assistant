@@ -15,7 +15,7 @@ var ctxs;
 //base size of each image while keeping the image ratio
 //the bigger the base the more pixels it would have to process
 //a very small base would make the process inaccurate
-var imageSize = 200;
+var imageSize = 300;
 
 //the average brightness of each image will have before going through the process
 var normalBrightness = 75;
@@ -91,7 +91,7 @@ function Apply()
         //set one canvas in memory so all other canvases are for output only
         let tempCanvas = document.createElement("canvas");
         tempCanvas.width = size[0];
-        tempCanvas.height = size [0];
+        tempCanvas.height = size [1];
 
         //set up context
         let tempCtx = tempCanvas.getContext('2d');
@@ -174,7 +174,9 @@ function Apply()
 
         tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
         ctxs[8].putImageData(tempImageData, 0, 0);
-        console.log("After Separating Objects: " + (Date.now() - currentTime) + " miliseconds")
+
+        //record time
+        console.log("After Getting all the segments: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
         for(let i = 0; i < segments.length; i++)
@@ -697,7 +699,7 @@ function GetSegments(source)
                 }
 
                 FloodFill(segmentImageData.data, 0, 0);
-
+                
                 InvertBlackAndWhite(segmentImageData.data);
 
                 let segment = new Segment(segmentImageData, xMin, yMin, xMax, yMax);
@@ -804,46 +806,81 @@ function FloodFill(data, x, y)
     FillStage2(data);
 }
 
+//recursive version
+// function FillStage1(pixels, x, y)
+// {
+//     pixels[y][x] = [255, 0, 0, 255];
+
+//     if((y - 1) > 0)
+//     {
+//         if(pixels[y - 1][x][0] != 255)
+//         {
+//             FillStage1(pixels, x, y - 1);
+//         }
+//     }
+
+//     if((x - 1) > 0)
+//     {
+//         if(pixels[y][x - 1][0] != 255)
+//         {
+//             FillStage1(pixels, x - 1, y);
+//         }
+//     }
+
+//     if((y + 1) < pixels.length)
+//     {
+//         if(pixels[y + 1][x][0] != 255)
+//         {
+//             FillStage1(pixels, x, y + 1);
+//         }
+//     }
+
+//     if((x + 1) < pixels[0].length)
+//     {
+//         if(pixels[y][x + 1][0] != 255)
+//         {
+//             FillStage1(pixels, x + 1, y);
+//         }
+//     }
+// }
+
 function FillStage1(pixels, x, y)
 {
-    pixels[y][x] = [255, 0, 0, 255];
+    let stack = [];
+    stack.push([y,x]);
 
-    if((y - 1) > 0)
+    while(stack.length > 0)
     {
-        if(pixels[y - 1][x][0] != 255)
+        let col = stack[stack.length - 1][0];
+        let row = stack[stack.length - 1][1];
+        stack.pop();
+
+        pixels[col][row] = [255, 0, 0, 255];
+
+        if(((col - 1) >= 0) && (pixels[col -1][row][0] != 255))
         {
-            FillStage1(pixels, x, y - 1);
+            stack.push([(col - 1), row]);
         }
-    }
 
-    if((x - 1) > 0)
-    {
-        if(pixels[y][x - 1][0] != 255)
+        if(((row + 1) < pixels[0].length) && (pixels[col][row + 1][0] != 255))
         {
-            FillStage1(pixels, x - 1, y);
+            stack.push([col, (row + 1)]);
         }
-    }
 
-    if((y + 1) < pixels.length)
-    {
-        if(pixels[y + 1][x][0] != 255)
+        if(((col + 1) < pixels.length) && (pixels[col + 1][row][0] != 255))
         {
-            FillStage1(pixels, x, y + 1);
+            stack.push([(col + 1), row]);
         }
-    }
 
-    if((x + 1) < pixels[0].length)
-    {
-        if(pixels[y][x + 1][0] != 255)
+        if(((row - 1) >= 0) && (pixels[col][row - 1][0] != 255))
         {
-            FillStage1(pixels, x + 1, y);
+            stack.push([col, (row - 1)]);
         }
     }
 }
 
 function FillStage2(pixels)
 {
-    
     for(let a = 0; a < pixels.length; a++)
     {
         for(let b = 0; b < pixels[a].length; b++)
