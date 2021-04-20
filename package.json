@@ -1,0 +1,23 @@
+{
+  "name": "golf-assistant",
+  "version": "1.0.0",
+  "description": "Test App for Image Segmentation and Analysis",
+  "main": "babel.config.js",
+  "dependencies": {
+    "jest": "^26.6.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puttryte/golf-assistant.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/puttryte/golf-assistant/issues"
+  },
+  "homepage": "https://github.com/puttryte/golf-assistant#readme"
+}

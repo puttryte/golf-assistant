@@ -101,14 +101,7 @@ export default class Color
     //source: https://www.rapidtables.com/convert/color/hsv-to-rgb.html
     static HSVtoRGB(hue, saturation, value)
     {
-        if(hue < 0)
-        {
-            hue += 360;
-        }
-        else if(hue > 360)
-        {
-            hue -= 360;
-        }
+        hue %= 360;
 
         let c = value * saturation;
         let x = c * (1 - Math.abs(((hue / 60) % 2) - 1))
