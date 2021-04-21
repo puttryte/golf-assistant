@@ -1,6 +1,6 @@
 import './RecordContainer.css';
 import {hourglassOutline, golf, camera} from 'ionicons/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
@@ -28,7 +28,22 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     let imgArrOut: String[] = [];
 
-    // const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    useEffect(() => {
+        const script = document.createElement('script');
+
+        script.src = '../image-segmentation/ImageSegmentation.js';
+        script.async = true;
+        script.type = 'module';
+        
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        }
+
+    }, []);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
@@ -83,6 +98,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
                 <p>hello</p>
         </Modal> */}
+        <canvas />
     </div>
 
   );
