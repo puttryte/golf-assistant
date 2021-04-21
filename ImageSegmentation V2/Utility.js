@@ -12,6 +12,10 @@ export default class Utility
         return Math.max(Math.min(num, max), min);
     }
 
+    //Get the Eclidean Distance using 3 XY coordinates
+    //Parameter: length : Number    : length of both arrays
+    //           p      : int Array : array of pixel information ie RBG = [0, 0, 0] = black
+    //           q      : int Array : array of pixel information 
     static EuclideanDistance(length, p, q)
     {
         let a = 0;
@@ -22,33 +26,5 @@ export default class Utility
         }
 
         return Math.sqrt(a);
-    }
-
-    //Get the Eclidean Distance using 3 XY coordinates
-    //Parameter: q1 : number   : first X value
-    //           q2 : number   : second X value
-    //           q3 : number   : third X value
-    //           p1 : number   : first Y value
-    //           p2 : number   : second Y value
-    //           p3 : number   : third Y value
-    //Return:    number
-    static EuclideanDistance3(q1, q2, q3, p1, p2, p3)
-    {
-        return Math.sqrt(Math.pow((q1 - p1), 2) + Math.pow((q2 - p2), 2) + Math.pow((q3 - p3), 2));
-    }
-    
-    //Get the Eclidean Distance using 4 XY coordinates
-    //Parameter: q1 : number   : first X value
-    //           q2 : number   : second X value
-    //           q3 : number   : third X value
-    //           q4 : number   : fourth X value
-    //           p1 : number   : first Y value
-    //           p2 : number   : second Y value
-    //           p3 : number   : third Y value
-    //           p4 : number   : fourth Y value
-    //Return:    number
-    static EuclideanDistance4(q1, q2, q3, q4, p1, p2, p3, p4)
-    {
-        return Math.sqrt(Math.pow((q1 - p1), 2) + Math.pow((q2 - p2), 2) + Math.pow((q3 - p3), 2) + Math.pow((q4 - p4), 2));
     }
 }

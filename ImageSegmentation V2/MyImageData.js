@@ -1,10 +1,15 @@
 export default class MyImageData
 {
+    //Parameter: width          : Number            : row number
+    //           height         : Number            : column number
+    //           uint8_array    : Uint8ClampedArray : image information using RGBA color space
     constructor(width, height, uint8_array)
     {
         let counter = 0;
         let empty = false;
 
+        //check if Uint8ClampedArray image data is provided,
+        //if not, return the object with a black image / "empty" image
         if( (arguments.length == 2) &&
             (typeof(arguments[0]) === 'number') && 
             (typeof(arguments[1]) === 'number'))
@@ -39,6 +44,7 @@ export default class MyImageData
         }
     }
     
+    //Return a Uint8Array of the image data of the object.
     getUint8Array()
     {
         let arr = new Uint8Array(this.width * this.height * 4);
