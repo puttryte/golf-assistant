@@ -2,7 +2,6 @@ import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, IonRoute } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
-import LoadingPage from './pages/LoadingPage'
 import { images, square, triangle } from 'ionicons/icons';
 
 /* Core CSS required for Ionic components to work properly */
@@ -33,9 +32,6 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/">
           <Redirect to="/home" />
-        </Route>
-        <Route exact path="/loading">
-          <LoadingPage />
         </Route>
       </IonRouterOutlet>
     </IonReactRouter>

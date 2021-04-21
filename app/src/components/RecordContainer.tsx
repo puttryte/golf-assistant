@@ -5,11 +5,10 @@ import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
-import LoadingComponent from './LoadingComponent'
-import { useHistory, Redirect } from 'react-router-dom';
-import {Modal} from 'antd';
+// import LoadingComponent from './LoadingComponent'
+// import {Modal} from 'antd';
 import 'antd/dist/antd.css'
-import {GlobalContext} from './GlobalContext'
+import {GlobalContext} from './GlobalContext';
 
 
 const { CameraPreview } = Plugins;
@@ -22,28 +21,21 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         updateImgArr
     } = GlobalContext();
 
-    let history = useHistory();
 
-    let result: any = [];
+    // useEffect(() => {
+    //     const script = document.createElement('script');
 
-    let imgArrOut: String[] = [];
-
-    const [isModalVisible, setIsModalVisible] = useState(false);
-
-    useEffect(() => {
-        const script = document.createElement('script');
-
-        script.src = '../image-segmentation/ImageSegmentation.js';
-        script.async = true;
-        script.type = 'module';
+    //     script.src = './ImageSegmentation.js';
+    //     script.async = true;
+    //     script.type = 'module';
         
-        document.body.appendChild(script);
+    //     document.body.appendChild(script);
 
-        return () => {
-            document.body.removeChild(script);
-        }
+    //     return () => {
+    //         document.body.removeChild(script);
+    //     }
 
-    }, []);
+    // }, []);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
@@ -58,9 +50,6 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     //     setIsModalVisible(false);
     // }
 
-    const redirectToNext = () => {
-        history.push('/loading');
-    }
 
     const takePicture = () => {
         // for (let i = 0; i < 20; i++) {
@@ -89,10 +78,6 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
                 <IonIcon icon={hourglassOutline} />
                 Capture
-            </IonButton>
-            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { redirectToNext() }}>
-                <IonIcon icon={golf} />
-                Go to next
             </IonButton>
         </div>
         {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>

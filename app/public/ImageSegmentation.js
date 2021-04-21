@@ -1,4 +1,4 @@
-
+//type="text/javascript"
 import MyImageData from "./MyImageData.js";
 import ImageProcessing from "./ImageProcessing.js"
 import KMeans from "./KMeans.js";
@@ -71,7 +71,7 @@ function Apply()
     //get the image selected and declare the image variable.
     // let mySelect = document.getElementById("testImage");
     let image = new Image();
-    image.src = '../TestImages/test7.jpg';
+    image.src = './test7.jpg';
 
     //start the function when the image is done loading
     image.onload = function()
