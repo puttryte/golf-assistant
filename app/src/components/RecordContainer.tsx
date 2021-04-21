@@ -7,8 +7,7 @@ import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 // import LoadingComponent from './LoadingComponent'
 // import {Modal} from 'antd';
-import 'antd/dist/antd.css'
-import {GlobalContext} from './GlobalContext';
+import 'antd/dist/antd.css';
 
 
 const { CameraPreview } = Plugins;
@@ -16,31 +15,31 @@ interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
 
-    const {
-        getImgArr,
-        updateImgArr
-    } = GlobalContext();
+    const result: any = [];
 
 
-    // useEffect(() => {
-    //     const script = document.createElement('script');
 
-    //     script.src = './ImageSegmentation.js';
-    //     script.async = true;
-    //     script.type = 'module';
+
+    useEffect(() => {
+        const script = document.createElement('script');
+
+        script.src = './ImageSegmentation.js';
+        script.async = true;
+        script.type = 'module';
         
-    //     document.body.appendChild(script);
+        document.body.appendChild(script);
 
-    //     return () => {
-    //         document.body.removeChild(script);
-    //     }
+        return () => {
+            document.body.removeChild(script);
+        }
 
-    // }, []);
+    }, []);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
         height: 300,
     };
+
 
     // const handleOk = () => {
     //     setIsModalVisible(false);
@@ -51,20 +50,14 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     // }
 
 
-    const takePicture = () => {
-        // for (let i = 0; i < 20; i++) {
-        //     result[i] = await Plugins.CameraPreview.capture();
-        //     result[i].value = window.btoa(result[i].value);
-        //     console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
-        //     setCurrentImg('data:image/jpeg;base64,' + window.atob(result[i].value));
-        //     imgArr.push(currentImg);
-        // }
-        // Plugins.CameraPreview.stop();
-        updateImgArr("hey");
-        console.log(getImgArr());
-    // });
+    const takePicture = async () => {
+        for (let i = 0; i < 20; i++) {
+            result[i] = await Plugins.CameraPreview.capture();
+            result[i].value = window.btoa(result[i].value);
+            console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
+        }
+        Plugins.CameraPreview.stop();
     };
-
 
   return (
     <div className="recording">
@@ -83,7 +76,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
                 <p>hello</p>
         </Modal> */}
-        <canvas />
+        <input type="hidden" value={result} id='inputArray' />
+        <canvas></canvas>
     </div>
 
   );

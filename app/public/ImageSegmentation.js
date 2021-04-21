@@ -55,23 +55,25 @@ function main()
 
     canvases = document.getElementsByTagName("canvas");
     ctxs = new Array(canvases.length);
+    var imgArr = document.getElementById("inputArray").value;
+
+    console.log(imgArr);
 
     //start the proccess with the default image 
-    Apply();
+    Apply(imgArr);
 }
 
 //fuction gets trigger when the apply button is pressed.
-function Apply()
+function Apply(imgArr)
 { 
     //for record timing purposes
-    console.clear();
     startTime = Date.now();
     currentTime = Date.now();
 
     //get the image selected and declare the image variable.
     // let mySelect = document.getElementById("testImage");
     let image = new Image();
-    image.src = './test7.jpg';
+    image.src = imgArr[1];
 
     //start the function when the image is done loading
     image.onload = function()
@@ -126,7 +128,7 @@ function Apply()
         currentTime = Date.now();
 
         //get the selected colorspace to use, defaulted to CMYK
-        let colorSpace = parseInt(document.getElementById("colorSpace").value);
+        let colorSpace = 1;
         let kMeansImageDatas = KMeans.ProcessImage(imageData, colorSpace, cluster, iteration);
 
         //record time.
@@ -191,8 +193,8 @@ function Apply()
             tempCtx.stroke();
         }
 
-        // let test = tempCtx.getImageData(0, 0, size[0], size[1]);
-        // ctxs[2].putImageData(test, 0, 0);
+        let test = tempCtx.getImageData(0, 0, size[0], size[1]);
+        ctxs[0].putImageData(test, 0, 0);
 
         // //denoise the separated parts
         // ImageProcessing.Erosion(ctxs[9], ctxs[9], 2);
