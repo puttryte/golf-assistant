@@ -27,14 +27,9 @@ export default class ImageProcessing
     //Return:    int Array  : length of 2
     static GetImageScale(width, height, base)
     {
-        if(width > height)
-        {
-            return [Math.round((width * base) / height), base]
-        }
-        else
-        {
-            return [base, Math.round((height * base) / width)]
-        }
+        return width > height
+            ? [Math.round((width * base)) / height, base]
+            : [base, Math.round((height * base) / width)];
     }
     
     //Equals the average of all the pixels to the number given
