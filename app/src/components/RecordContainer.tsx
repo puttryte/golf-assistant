@@ -6,8 +6,8 @@ import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 // import LoadingComponent from './LoadingComponent'
-// import {Modal} from 'antd';
-//import 'antd/dist/antd.css';
+import {Modal} from 'antd';
+import 'antd/dist/antd.css';
 
 
 const { CameraPreview } = Plugins;
@@ -15,7 +15,11 @@ interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
 
-    const result: any = [];
+    const tempResult: any = [];
+
+    const [result, setResult] = useState([]);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
 
 
@@ -40,24 +44,25 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         height: 300,
     };
 
+    const handleOk = () => {
+        setIsModalVisible(false);
+    }
 
-    // const handleOk = () => {
-    //     setIsModalVisible(false);
-    // }
-
-    // const handleCancel = () => {
-    //     setIsModalVisible(false);
-    // }
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    }
 
 
     const takePicture = async () => {
         for (let i = 0; i < 20; i++) {
-            result[i] = await Plugins.CameraPreview.capture();
-            result[i].value = window.btoa(result[i].value);
+            tempResult[i] = await Plugins.CameraPreview.capture();
+            tempResult[i].value = window.btoa(tempResult[i].value);
             //console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
-            result[i].value = window.atob(result[i].value);
+            tempResult[i].value = window.atob(tempResult[i].value);
+            setResult(tempResult);
         }
         Plugins.CameraPreview.stop();
+        setIsModalVisible(true);
     };
 
   return (
@@ -74,11 +79,10 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                 Capture
             </IonButton>
         </div>
-        {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-                <p>hello</p>
-        </Modal> */}
+        <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
         <input type="hidden" value={result} id='inputArray' />
         <canvas></canvas>
+        </Modal>
     </div>
 
   );
