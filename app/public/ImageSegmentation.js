@@ -60,6 +60,8 @@ function main()
     // //declare a behavior of the apply button
     // document.getElementById("applybtn").addEventListener('click', Apply);
 
+    document.getElementById("applybtn").addEventListener('click', Apply);
+
     canvases = document.getElementsByTagName("canvas");
     ctxs = new Array(canvases.length);
     var imgArr = document.getElementById("inputArray").value;
