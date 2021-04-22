@@ -21,11 +21,6 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    var moveOn = false;
-
-
-
-
     useEffect(() => {
         const script = document.createElement('script');
 
@@ -39,7 +34,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             document.body.removeChild(script);
         }
 
-    }, []);
+    }, [result]);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
@@ -65,16 +60,9 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         }
         Plugins.CameraPreview.stop();
         setIsModalVisible(true);
-        moveOn = true;
     };
 
-    if(moveOn){
-        return(
-            <canvas></canvas>
-        )
-    }
 
-else{
   return (
     <div className="recording">
          <div>
@@ -95,7 +83,7 @@ else{
     </div>
 
   );
-}
+
 };
 
 export default RecordContainer;

@@ -3,6 +3,7 @@ import MyImageData from "./MyImageData.js";
 import ImageProcessing from "./ImageProcessing.js"
 import KMeans from "./KMeans.js";
 import Segment from "./Segment.js"
+// import {useEffect} from 'react';
 
 //for keeping up a record of time of each processes.
 var startTime = Date.now();
@@ -36,6 +37,12 @@ var numOfDilation = 1;
 //Start of the Process. 
 function main()
 {
+
+    // useEffect(() => {
+        
+    //     Apply(imgArr);
+
+    // }, [imgArr]);
     //set up the drop selection base on the TestImages.js
     // var mySelect = document.getElementById("testImage");
 
