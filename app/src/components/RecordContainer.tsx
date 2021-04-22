@@ -7,7 +7,7 @@ import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 // import LoadingComponent from './LoadingComponent'
 // import {Modal} from 'antd';
-import 'antd/dist/antd.css';
+//import 'antd/dist/antd.css';
 
 
 const { CameraPreview } = Plugins;
@@ -54,19 +54,20 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         for (let i = 0; i < 20; i++) {
             result[i] = await Plugins.CameraPreview.capture();
             result[i].value = window.btoa(result[i].value);
-            console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
+            //console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
+            result[i].value = window.atob(result[i].value);
         }
         Plugins.CameraPreview.stop();
     };
 
   return (
     <div className="recording">
-        {/* <div>
+         <div>
             <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => { Plugins.CameraPreview.start(cameraPreviewOptions) }}>
                 <IonIcon icon={golf} />
                 Start
             </IonButton>
-        </div> */}
+        </div>
         <div>
             <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
                 <IonIcon icon={hourglassOutline} />

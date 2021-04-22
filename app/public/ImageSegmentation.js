@@ -73,7 +73,8 @@ function Apply(imgArr)
     //get the image selected and declare the image variable.
     // let mySelect = document.getElementById("testImage");
     let image = new Image();
-    image.src = imgArr[1];
+    image.src = imgArr[0];
+    console.log("***********" + image.src);
 
     //start the function when the image is done loading
     image.onload = function()

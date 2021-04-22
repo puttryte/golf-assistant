@@ -24,7 +24,7 @@
     "@types/react-dom": "^16.9.12",
     "@types/react-router": "^5.1.13",
     "@types/react-router-dom": "^5.1.7",
-    "antd": "^4.15.1",
+    "antd": "^4.15.2",
     "cordova-plugin-camera-preview": "git+https://github.com/cordova-plugin-camera-preview/cordova-plugin-camera-preview.git",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-file": "^6.0.2",
