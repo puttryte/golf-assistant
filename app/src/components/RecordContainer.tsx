@@ -21,6 +21,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
+    var moveOn = false;
+
 
 
 
@@ -63,8 +65,16 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         }
         Plugins.CameraPreview.stop();
         setIsModalVisible(true);
+        moveOn = true;
     };
 
+    if(moveOn){
+        return(
+            <canvas></canvas>
+        )
+    }
+
+else{
   return (
     <div className="recording">
          <div>
@@ -80,13 +90,12 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             </IonButton>
         </div>
         <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-
-        <canvas></canvas>
         </Modal>
         <input type="hidden" value={result} id='inputArray' />
     </div>
 
   );
+}
 };
 
 export default RecordContainer;
