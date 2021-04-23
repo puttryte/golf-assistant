@@ -77,6 +77,7 @@ function Apply()
     canvases = document.getElementsByTagName("canvas");
     ctxs = new Array(canvases.length);
     var imgArr = document.getElementById("inputArray").value;
+    console.log(imgArr);
     //for record timing purposes
     startTime = Date.now();
     currentTime = Date.now();

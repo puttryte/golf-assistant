@@ -34,6 +34,11 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             document.body.removeChild(script);
         }
 
+    }, []);
+
+    useEffect(() => {
+        console.log(result)
+
     }, [result]);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
@@ -54,13 +59,13 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         for (let i = 0; i < 20; i++) {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
-            //console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
+            console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
             tempResult[i].value = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value));
         }
         setResult(tempResult);
         Plugins.CameraPreview.stop();
         setIsModalVisible(true);
-        console.log(result);
+        //console.log(result);
     };
 
 
@@ -83,11 +88,12 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             {/* <input type="hidden" value={result} id='inputArray' /> */}
         </Modal>
         <IonButton id='applybtn' ></IonButton>
+        {/*<p> {tempResult[0]} </p>*/}
         <input type="hidden" value={result} id='inputArray' />
+        <canvas></canvas>
     </div>
 
   );
-
 };
 
 export default RecordContainer;
