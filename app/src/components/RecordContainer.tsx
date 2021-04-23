@@ -55,11 +55,12 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
             //console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
-            tempResult[i].value = window.atob(tempResult[i].value);
-            setResult(tempResult);
+            tempResult[i].value = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value));
         }
+        setResult(tempResult);
         Plugins.CameraPreview.stop();
         setIsModalVisible(true);
+        console.log(result);
     };
 
 
@@ -78,9 +79,10 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             </IonButton>
         </div>
         <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-            <button id = "applybtn">Apply</button>
-            <input type="hidden" value={result} id='inputArray' />
+            {/* <IonButton id='applybtn' ></IonButton> */}
+            {/* <input type="hidden" value={result} id='inputArray' /> */}
         </Modal>
+        <IonButton id='applybtn' ></IonButton>
         <input type="hidden" value={result} id='inputArray' />
     </div>
 

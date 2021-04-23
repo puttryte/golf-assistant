@@ -62,19 +62,21 @@ function main()
 
     document.getElementById("applybtn").addEventListener('click', Apply);
 
-    canvases = document.getElementsByTagName("canvas");
-    ctxs = new Array(canvases.length);
     var imgArr = document.getElementById("inputArray").value;
 
     console.log(imgArr);
 
     //start the proccess with the default image 
-    Apply(imgArr);
+    Apply();
 }
 
 //fuction gets trigger when the apply button is pressed.
-function Apply(imgArr)
+function Apply()
 { 
+
+    canvases = document.getElementsByTagName("canvas");
+    ctxs = new Array(canvases.length);
+    var imgArr = document.getElementById("inputArray").value;
     //for record timing purposes
     startTime = Date.now();
     currentTime = Date.now();
