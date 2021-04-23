@@ -64,7 +64,6 @@ function main()
 
     var imgArr = document.getElementById("inputArray").value;
 
-    console.log(imgArr);
 
     //start the proccess with the default image 
     Apply();
@@ -72,8 +71,7 @@ function main()
 
 //fuction gets trigger when the apply button is pressed.
 function Apply()
-{ 
-
+{
     canvases = document.getElementsByTagName("canvas");
     ctxs = new Array(canvases.length);
     var imgArr = document.getElementById("inputArray").value;

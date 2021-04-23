@@ -36,10 +36,6 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     }, []);
 
-    useEffect(() => {
-        console.log(result)
-
-    }, [result]);
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
@@ -59,8 +55,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         for (let i = 0; i < 20; i++) {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
-            console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
-            tempResult[i].value = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value));
+            //console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
+            tempResult[i] = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value));
         }
         setResult(tempResult);
         Plugins.CameraPreview.stop();
@@ -89,7 +85,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         </Modal>
         <IonButton id='applybtn' ></IonButton>
         {/*<p> {tempResult[0]} </p>*/}
-        <input type="hidden" value={result} id='inputArray' />
+        <input type="hidden"  value={result[0]} id='inputArray' />
         <canvas></canvas>
     </div>
 
