@@ -62,11 +62,11 @@ function main()
 
     document.getElementById("applybtn").addEventListener('click', Apply);
 
-    var imgArr = document.getElementById("inputArray").value;
+    //var imgArr = document.getElementById("inputArray").value;
 
 
     //start the proccess with the default image 
-    Apply();
+
 }
 
 //fuction gets trigger when the apply button is pressed.
@@ -75,7 +75,9 @@ function Apply()
     canvases = document.getElementsByTagName("canvas");
     ctxs = new Array(canvases.length);
     var imgArr = document.getElementById("inputArray").value;
-    console.log(imgArr);
+    var splitArr = imgArr.split('|');
+    console.log(splitArr[0]);
+    console.log(splitArr);
     //for record timing purposes
     startTime = Date.now();
     currentTime = Date.now();
@@ -83,7 +85,7 @@ function Apply()
     //get the image selected and declare the image variable.
     // let mySelect = document.getElementById("testImage");
     let image = new Image();
-    image.src = imgArr[0];
+    image.src = splitArr[0];
     console.log("***********" + image.src);
 
     //start the function when the image is done loading

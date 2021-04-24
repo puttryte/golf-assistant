@@ -56,7 +56,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
             //console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
-            tempResult[i] = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value));
+            tempResult[i] = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value) + '|');
         }
         setResult(tempResult);
         Plugins.CameraPreview.stop();
@@ -85,7 +85,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         </Modal>
         <IonButton id='applybtn' ></IonButton>
         {/*<p> {tempResult[0]} </p>*/}
-        <input type="hidden"  value={result[0]} id='inputArray' />
+        <input type="hidden"  value={result} id='inputArray' />
         <canvas></canvas>
     </div>
 
