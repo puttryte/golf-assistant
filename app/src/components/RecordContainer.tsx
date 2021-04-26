@@ -80,10 +80,12 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             </IonButton>
         </div>
         <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-            <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
-            <canvas></canvas>
+            {/* <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
+            <canvas></canvas> */}
             {/* <input type="hidden" value={result} id='inputArray' /> */}
         </Modal>
+        <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
+        <canvas></canvas>
         <input type="hidden"  value={result} id='inputArray' />
     </div>
 
