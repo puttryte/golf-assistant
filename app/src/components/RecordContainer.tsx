@@ -17,6 +17,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     const tempResult: any = [];
 
+    const [buttonValue, setButtonValue] = useState("Capture");
+
     const [result, setResult] = useState([]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -61,6 +63,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         setResult(tempResult);
         Plugins.CameraPreview.stop();
         setIsModalVisible(true);
+        setButtonValue("Get Results");
         //console.log(result);
     };
 
@@ -74,17 +77,16 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             </IonButton>
         </div>
         <div>
-            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
+            <IonButton id='applybtn' shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
                 <IonIcon icon={hourglassOutline} />
-                Capture
+                {buttonValue}
             </IonButton>
         </div>
-        <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-            {/* <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
-            <canvas></canvas> */}
-            {/* <input type="hidden" value={result} id='inputArray' /> */}
-        </Modal>
-        <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
+        {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
+            <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
+            <canvas></canvas>
+            <input type="hidden" value={result} id='inputArray' />
+        </Modal> */}
         <canvas></canvas>
         <input type="hidden"  value={result} id='inputArray' />
     </div>
