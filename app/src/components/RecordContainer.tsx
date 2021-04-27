@@ -69,6 +69,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
 
   return (
+      <div>
     <div className="recording">
          <div>
             <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => { Plugins.CameraPreview.start(cameraPreviewOptions) }}>
@@ -87,8 +88,11 @@ const RecordContainer: React.FC<ContainerProps> = () => {
             <canvas></canvas>
             <input type="hidden" value={result} id='inputArray' />
         </Modal> */}
-        <canvas></canvas>
-        <input type="hidden"  value={result} id='inputArray' />
+    </div>
+    <div className='canvas'>
+            <canvas></canvas>
+            <input type="hidden"  value={result} id='inputArray' />
+        </div>
     </div>
 
   );

@@ -1,6 +1,6 @@
 .recording {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   text-align: center;
   align-items: center;
   position: absolute;
@@ -8,6 +8,18 @@
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.canvas{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25%;
+  transform: translateY(-25%);
 }
 
 .recording strong {
