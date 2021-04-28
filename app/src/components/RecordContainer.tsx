@@ -1,15 +1,13 @@
 import './RecordContainer.css';
 import {hourglassOutline, golf, camera} from 'ionicons/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
-import LoadingComponent from './LoadingComponent'
-import { useHistory, Redirect } from 'react-router-dom';
+// import LoadingComponent from './LoadingComponent'
 import {Modal} from 'antd';
-import 'antd/dist/antd.css'
-import {GlobalContext} from './GlobalContext'
+import 'antd/dist/antd.css';
 
 
 const { CameraPreview } = Plugins;
@@ -17,72 +15,84 @@ interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = () => {
 
-    const {
-        getImgArr,
-        updateImgArr
-    } = GlobalContext();
+    const tempResult: any = [];
 
-    let history = useHistory();
+    const [buttonValue, setButtonValue] = useState("Capture");
 
-    let result: any = [];
+    const [result, setResult] = useState([]);
 
-    let imgArrOut: String[] = [];
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-    // const [isModalVisible, setIsModalVisible] = useState(false);
+    useEffect(() => {
+        const script = document.createElement('script');
+
+        script.src = './ImageSegmentation.js';
+        script.async = true;
+        script.type = 'module';
+        
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        }
+
+    }, []);
+
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
         height: 300,
     };
 
-    // const handleOk = () => {
-    //     setIsModalVisible(false);
-    // }
-
-    // const handleCancel = () => {
-    //     setIsModalVisible(false);
-    // }
-
-    const redirectToNext = () => {
-        history.push('/loading');
+    const handleOk = () => {
+        setIsModalVisible(false);
     }
 
-    const takePicture = () => {
-        // for (let i = 0; i < 20; i++) {
-        //     result[i] = await Plugins.CameraPreview.capture();
-        //     result[i].value = window.btoa(result[i].value);
-        //     console.log('data:image/jpeg;base64,' + window.atob(result[i].value));
-        //     setCurrentImg('data:image/jpeg;base64,' + window.atob(result[i].value));
-        //     imgArr.push(currentImg);
-        // }
-        // Plugins.CameraPreview.stop();
-        updateImgArr("hey");
-        console.log(getImgArr());
-    // });
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    }
+
+
+    const takePicture = async () => {
+        for (let i = 0; i < 20; i++) {
+            tempResult[i] = await Plugins.CameraPreview.capture();
+            tempResult[i].value = window.btoa(tempResult[i].value);
+            //console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
+            tempResult[i] = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value) + '|');
+        }
+        setResult(tempResult);
+        Plugins.CameraPreview.stop();
+        setIsModalVisible(true);
+        setButtonValue("Get Results");
+        //console.log(result);
     };
 
 
   return (
+      <div>
     <div className="recording">
-        {/* <div>
+         <div>
             <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => { Plugins.CameraPreview.start(cameraPreviewOptions) }}>
                 <IonIcon icon={golf} />
                 Start
             </IonButton>
-        </div> */}
+        </div>
         <div>
-            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
+            <IonButton id='applybtn' shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
                 <IonIcon icon={hourglassOutline} />
-                Capture
-            </IonButton>
-            <IonButton shape='round' size='large' color='dark' mode={'ios'} onClick={() => { redirectToNext() }}>
-                <IonIcon icon={golf} />
-                Go to next
+                {buttonValue}
             </IonButton>
         </div>
         {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-                <p>hello</p>
+            <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
+            <canvas></canvas>
+            <input type="hidden" value={result} id='inputArray' />
         </Modal> */}
+    </div>
+    <div className='canvas'>
+            <canvas></canvas>
+            <input type="hidden"  value={result} id='inputArray' />
+        </div>
     </div>
 
   );
