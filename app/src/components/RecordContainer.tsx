@@ -2,7 +2,6 @@ import './RecordContainer.css';
 import {hourglassOutline, golf, camera, golfOutline, arrowForward, arrowBack} from 'ionicons/icons';
 import React, { useEffect } from 'react';
 import Sound from 'react-sound';
-import AvgBPM from './150bpm_4-4time.mp3';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
@@ -30,6 +29,8 @@ const RecordContainer: React.FC<ContainerProps> = (
     const [result, setResult] = useState([]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const Metronome = require("./150bpm_4-4time.mp3");
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -96,7 +97,7 @@ const RecordContainer: React.FC<ContainerProps> = (
               <div>
                   <button onClick={() => setIsPlaying(!isPlaying)}>{!isPlaying ? 'Start Metronome' : 'Stop Metronome'}</button>
                   <Sound
-                    url = {AvgBPM}
+                    url = {Metronome}
                     playStatus = { isPlaying ? Sound.status.PLAYING : Sound.status.STOPPED}
                     playFromPosition={300}
                     // onLoading = {handleSongLoading}
