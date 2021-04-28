@@ -10,6 +10,18 @@
   transform: translateY(-50%);
 }
 
+.imageButtons {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 90%;
+  transform: translateY(-50%);
+}
+
 .canvas{
   display: flex;
   justify-content: center;
