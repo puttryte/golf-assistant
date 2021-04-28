@@ -9,6 +9,7 @@ import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
 // import LoadingComponent from './LoadingComponent'
 import {Modal} from 'antd';
 import 'antd/dist/antd.css';
+import useSound from 'use-sound';
 
 
 const { CameraPreview } = Plugins;
@@ -81,6 +82,10 @@ const RecordContainer: React.FC<ContainerProps> = (
         //console.log(result);
     };
 
+    const PlayButton = () => {
+        const [play] = useSound(Metronome);
+    }
+
 
   return (
       <div>
@@ -95,15 +100,9 @@ const RecordContainer: React.FC<ContainerProps> = (
                   </IonButton>
               </div>
               <div>
-                  <button onClick={() => setIsPlaying(!isPlaying)}>{!isPlaying ? 'Start Metronome' : 'Stop Metronome'}</button>
-                  <Sound
-                    url = {Metronome}
-                    playStatus = { isPlaying ? Sound.status.PLAYING : Sound.status.STOPPED}
-                    playFromPosition={300}
-                    // onLoading = {handleSongLoading}
-                    // onPlaying = {handleSongPlaying}
-                    // onFinishedPlaying={handleSongFinishedPlaying}
-                  />
+                  <IonButton shape='round' size='large' color='secondary' mode={'ios'} onClick={()=> {PlayButton()}}>
+                      Metronome 
+                    </IonButton>
               </div>
               <div>
                   <IonButton id='applybtn' shape='round' size='large' color='secondary' mode={'ios'} onClick={() => { takePicture() }}>
