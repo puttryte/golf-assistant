@@ -1,5 +1,5 @@
 import './RecordContainer.css';
-import {hourglassOutline, golf, camera} from 'ionicons/icons';
+import {hourglassOutline, golf, camera, golfOutline} from 'ionicons/icons';
 import React, { useEffect } from 'react';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
@@ -41,7 +41,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     const cameraPreviewOptions: CameraPreviewOptions = {
         position: 'rear',
-        height: 300,
+        height: 550,
     };
 
     const handleOk = () => {
@@ -52,8 +52,13 @@ const RecordContainer: React.FC<ContainerProps> = () => {
         setIsModalVisible(false);
     }
 
+    function timeout(delay: number) {
+        return new Promise( res => setTimeout(res, delay) );
+    }
+
 
     const takePicture = async () => {
+        await timeout(2000);
         for (let i = 0; i < 20; i++) {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
@@ -70,31 +75,33 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
   return (
       <div>
-    <div className="recording">
-         <div>
-            <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => { Plugins.CameraPreview.start(cameraPreviewOptions) }}>
-                <IonIcon icon={golf} />
-                Start
-            </IonButton>
-        </div>
-        <div>
-            <IonButton id='applybtn' shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
-                <IonIcon icon={hourglassOutline} />
-                {buttonValue}
-            </IonButton>
-        </div>
-        {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
-            <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
-            <canvas></canvas>
-            <input type="hidden" value={result} id='inputArray' />
-        </Modal> */}
-    </div>
-    <div className='canvas'>
-            <canvas></canvas>
-            <input type="hidden"  value={result} id='inputArray' />
-        </div>
-    </div>
-
+          <div className="recording">
+              <div>
+                  <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => {
+                      Plugins.CameraPreview.start(cameraPreviewOptions);
+                      setButtonValue("Capture");
+                  }}>
+                      <IonIcon icon={camera} />
+                      Open Camera
+                  </IonButton>
+              </div>
+              <div>
+                  <IonButton id='applybtn' shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
+                      <IonIcon icon={golfOutline} />
+                      {buttonValue}
+                  </IonButton>
+              </div>
+            {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
+                <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
+                <canvas></canvas>
+                <input type="hidden" value={result} id='inputArray' />
+            </Modal> */}
+          </div>
+          <div className='canvas'>
+              <canvas></canvas>
+              <input type="hidden"  value={result} id='inputArray' />
+          </div>
+      </div>
   );
 };
 
