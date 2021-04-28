@@ -1,6 +1,8 @@
 import './RecordContainer.css';
 import {hourglassOutline, golf, camera, golfOutline, arrowForward, arrowBack} from 'ionicons/icons';
 import React, { useEffect } from 'react';
+import Sound from 'react-sound':
+import AvgBPM from '150bpm_4-4time.mp3';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
@@ -11,9 +13,15 @@ import 'antd/dist/antd.css';
 
 
 const { CameraPreview } = Plugins;
+
 interface ContainerProps { }
 
-const RecordContainer: React.FC<ContainerProps> = () => {
+const RecordContainer: React.FC<ContainerProps> = (
+    handleSongLoading,
+    handleSongPlaying,
+    handleSongFinishedPlaying
+) => {
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const tempResult: any = [];
 
@@ -84,6 +92,17 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                       <IonIcon icon={camera} />
                       Open Camera
                   </IonButton>
+              </div>
+              <div>
+                  <button onClick={() => setIsPlaying(!isPlaying)}>{!isPlaying ? 'Start Metronome' : 'Stop Metronome'}</button>
+                  <Sound
+                    url = {AvgBPM}
+                    playStatus = { isPlaying ? Sound.status.PLAYING : Sound.status.STOPPED}
+                    playFromPosition={300}
+                    onLoading = {handleSongLoading}
+                    onPlaying = {handleSongPlaying}
+                    onFinishedPlaying={handleSongFinishedPlaying}
+                  />
               </div>
               <div>
                   <IonButton id='applybtn' shape='round' size='large' color='secondary' mode={'ios'} onClick={() => { takePicture() }}>
