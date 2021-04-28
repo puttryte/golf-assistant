@@ -86,7 +86,6 @@ function Apply()
     // let mySelect = document.getElementById("testImage");
     let image = new Image();
     image.src = splitArr[0];
-    console.log("***********" + image.src);
 
     //start the function when the image is done loading
     image.onload = function()
