@@ -1,8 +1,8 @@
 import './RecordContainer.css';
 import {hourglassOutline, golf, camera, golfOutline, arrowForward, arrowBack} from 'ionicons/icons';
 import React, { useEffect } from 'react';
-import Sound from 'react-sound':
-import AvgBPM from '150bpm_4-4time.mp3';
+import Sound from 'react-sound';
+import AvgBPM from './150bpm_4-4time.mp3';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
@@ -17,9 +17,9 @@ const { CameraPreview } = Plugins;
 interface ContainerProps { }
 
 const RecordContainer: React.FC<ContainerProps> = (
-    handleSongLoading,
-    handleSongPlaying,
-    handleSongFinishedPlaying
+    // handleSongLoading: any,
+    // handleSongPlaying: any,
+    // handleSongFinishedPlaying: any
 ) => {
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -99,9 +99,9 @@ const RecordContainer: React.FC<ContainerProps> = (
                     url = {AvgBPM}
                     playStatus = { isPlaying ? Sound.status.PLAYING : Sound.status.STOPPED}
                     playFromPosition={300}
-                    onLoading = {handleSongLoading}
-                    onPlaying = {handleSongPlaying}
-                    onFinishedPlaying={handleSongFinishedPlaying}
+                    // onLoading = {handleSongLoading}
+                    // onPlaying = {handleSongPlaying}
+                    // onFinishedPlaying={handleSongFinishedPlaying}
                   />
               </div>
               <div>
