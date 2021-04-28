@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-  ]
+, "public/Utility.js", "public/Segment.js", "public/MyImageData.js", "public/KMeans.js", "public/ImageSegmentation.js", "public/ImageProcessing.js", "public/Color.js", "public/test.js"  ]
 }

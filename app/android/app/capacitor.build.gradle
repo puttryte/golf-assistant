@@ -9,8 +9,8 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-
-
+    implementation project(':capacitor-community-camera-preview')
+    implementation "androidx.exifinterface:exifinterface:1.2.0"
 }
 
 
