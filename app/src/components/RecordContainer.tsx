@@ -1,5 +1,5 @@
 import './RecordContainer.css';
-import {hourglassOutline, golf, camera, golfOutline} from 'ionicons/icons';
+import {hourglassOutline, golf, camera, golfOutline, arrowForward, arrowBack} from 'ionicons/icons';
 import React, { useEffect } from 'react';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
@@ -59,7 +59,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     const takePicture = async () => {
         await timeout(2000);
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 5; i++) {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
             //console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
@@ -77,7 +77,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
       <div>
           <div className="recording">
               <div>
-                  <IonButton shape='round' size='large' color='success' mode={'ios'} onClick={() => {
+                  <IonButton shape='round' size='large' color='primary' mode={'ios'} onClick={() => {
                       Plugins.CameraPreview.start(cameraPreviewOptions);
                       setButtonValue("Capture");
                   }}>
@@ -86,11 +86,12 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                   </IonButton>
               </div>
               <div>
-                  <IonButton id='applybtn' shape='round' size='large' color='dark' mode={'ios'} onClick={() => { takePicture() }}>
+                  <IonButton id='applybtn' shape='round' size='large' color='secondary' mode={'ios'} onClick={() => { takePicture() }}>
                       <IonIcon icon={golfOutline} />
                       {buttonValue}
                   </IonButton>
               </div>
+
             {/* <Modal title="Loading Data" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} centered>
                 <IonButton id='applybtn' ><IonIcon icon={golf}></IonIcon>Get Results</IonButton>
                 <canvas></canvas>
@@ -101,7 +102,19 @@ const RecordContainer: React.FC<ContainerProps> = () => {
               <canvas></canvas>
               <input type="hidden"  value={result} id='inputArray' />
           </div>
+          <div className="imageButtons">
+              <IonButton id='prevButton' shape='round' size='default' color='medium' mode={'ios'} >
+                  <IonIcon icon={arrowBack} />
+                  BACK
+              </IonButton>
+              <IonButton id='nextButton' shape='round' size='default' color='medium' mode={'ios'} >
+                  <IonIcon icon={arrowForward} />
+                  NEXT
+              </IonButton>
+
+          </div>
       </div>
+
   );
 };
 
