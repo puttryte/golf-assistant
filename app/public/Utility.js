@@ -9,6 +9,10 @@ export default class Utility
     //Return:    number 
     static Clamp(num, min, max)
     {
+        if (max < min)
+        {
+            throw 'max must not be less than min';
+        }
         return Math.max(Math.min(num, max), min);
     }
 
