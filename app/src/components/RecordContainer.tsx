@@ -59,7 +59,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
 
     const takePicture = async () => {
         await timeout(2000);
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 30; i++) {
             tempResult[i] = await Plugins.CameraPreview.capture();
             tempResult[i].value = window.btoa(tempResult[i].value);
             //console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
