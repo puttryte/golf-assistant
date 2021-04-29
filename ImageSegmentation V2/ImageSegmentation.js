@@ -127,9 +127,6 @@ function Apply()
         let colorSpace = parseInt(document.getElementById("colorSpace").value);
         let kMeansImageDatas = KMeans.ProcessImage(imageData, colorSpace, cluster, iteration);
 
-        // ImageProcessing.CombineImageData(kMeansImageDatas[1].data, kMeansImageDatas[2].data);
-        // kMeansImageDatas.splice(2,1);
-        
         //record time.
         console.log("After K-means Algorithm: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
