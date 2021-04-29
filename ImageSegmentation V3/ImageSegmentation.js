@@ -1,8 +1,9 @@
 import TestImages from "../TestImages/TestImages.js";
 import MyImageData from "./MyImageData.js";
-import ImageProcessing from "./ImageProcessing.js"
+import ImageProcessing from "./ImageProcessing.js";
 import KMeans from "./KMeans.js";
-import Segment from "./Segment.js"
+import Segment from "./Segment.js";
+import HoughTransform from "./HoughTransform.js";
 
 //for keeping up a record of time of each processes.
 var startTime = Date.now();
@@ -131,9 +132,6 @@ function Apply()
         let colorSpace = parseInt(document.getElementById("colorSpace").value);
         let kMeansImageDatas = KMeans.ProcessImage(imageData, colorSpace, cluster, iteration);
 
-        // ImageProcessing.CombineImageData(kMeansImageDatas[1].data, kMeansImageDatas[2].data);
-        // kMeansImageDatas.splice(2,1);
-
         //convert image data to Uint8ClampedArray then output to canvas
         tempImageData.data.set(kMeansImageDatas[0].getUint8Array());
         ctxs[3].putImageData(tempImageData, 0, 0);
@@ -200,28 +198,28 @@ function Apply()
             let houghCircleOutput = HoughCircleTranform(segments[0], Math.round((segments[0].height) / 4));
             let houghLineOutput = HoughLineTranform(segments[0])
 
-            let peaks1 = GetHoughCirclePeaks(houghCircleOutput , 0.95, 5);
-            let peaks2 = GetHoughLinePeaks(houghLineOutput , 0.65, 5);
+            let peaks1 = HoughTransform.GetHoughCirclePeaks(houghCircleOutput , 0.99, 5);
+            let peaks2 = HoughTransform.GetHoughLinePeaks(houghLineOutput , 0.65, 5);
 
-            TestAnalysis2(ctxs[10], houghCircleOutput, peaks1);
-            TestAnalysis(ctxs[11], houghLineOutput , peaks2);
+            HoughTransform.TestAnalysis2(ctxs[10], houghCircleOutput, peaks1);
+            HoughTransform.TestAnalysis(ctxs[11], houghLineOutput , peaks2);
 
-            ShowHoughCircle(ctxs[7], ctxs[12], segments[0], peaks1, Math.round((segments[0].height) / 4));
-            ShowHoughLines(ctxs[12], ctxs[12], segments[0], peaks2);
+            HoughTransform.ShowHoughCircle(ctxs[0], ctxs[2], segments[0], peaks1, Math.round((segments[0].height) / 4));
+            HoughTransform.ShowHoughLines(ctxs[2], ctxs[2], segments[0], peaks2);
         }
         else if(segments.length == 2)
         {
             let houghCircleOutput = HoughCircleTranform(segments[0], Math.round((segments[0].height) / 2));
             let houghLineOutput = HoughLineTranform(segments[1])
 
-            let peaks1 = GetHoughCirclePeaks(houghCircleOutput , 0.95, 5);
-            let peaks2 = GetHoughLinePeaks(houghLineOutput , 0.75, 5);
+            let peaks1 = HoughTransform.GetHoughCirclePeaks(houghCircleOutput , 0.99, 5);
+            let peaks2 = HoughTransform.GetHoughLinePeaks(houghLineOutput , 0.75, 5);
 
-            TestAnalysis2(ctxs[10], houghCircleOutput, peaks1);
-            TestAnalysis(ctxs[11], houghLineOutput , peaks2);
+            HoughTransform.TestAnalysis2(ctxs[10], houghCircleOutput, peaks1);
+            HoughTransform.TestAnalysis(ctxs[11], houghLineOutput , peaks2);
 
-            ShowHoughCircle(ctxs[7], ctxs[12], segments[0], peaks1, Math.round((segments[0].height) / 2));
-            ShowHoughLines(ctxs[12], ctxs[12], segments[1], peaks2);
+            HoughTransform.ShowHoughCircle(ctxs[0], ctxs[2], segments[0], peaks1, Math.round((segments[0].height) / 2));
+            HoughTransform.ShowHoughLines(ctxs[2], ctxs[2], segments[1], peaks2);
         }
         else
         {
@@ -231,108 +229,23 @@ function Apply()
         ShowBorderAndSegment(ctxs[7], ctxs[8], size[0] / 3, size[0] * 2 / 3, segments)
         ShowSegments(ctxs[9], segments);
 
-
-    //#region TEST
-        // let temp_ImageData2 = ctxs[7].getImageData(0,0,size[0], size[1]);
-        // ctxs[9].putImageData(temp_ImageData2, 0, 0)
-
-
-        // for(let j = 0; j < segments.length; j++)
-        // {
-        //     let segment = segments[j];
-        //     let output =  Test(segment);
-
-        //     let houghImage = output[0];
-
-        //     canvases[8].width = houghImage.width * 2;
-        //     canvases[8].height = houghImage.height * 2;
-        //     ctxs[8] = canvases[8].getContext('2d');
-
-        //     let temp_ImageData = new ImageData(houghImage.width, houghImage.height);
-        //     temp_ImageData.data.set(houghImage.getUint8Array());
-        //     ctxs[8].putImageData(temp_ImageData, 0, 0)
-
-        //     ctxs[8].beginPath();
-        //     ctxs[8].lineWidth = ".5";
-        //     ctxs[8].strokeStyle = "blue";
-        //     ctxs[8].moveTo(0, houghImage.height / 2);
-        //     ctxs[8].lineTo(houghImage.width, houghImage.height / 2);
-        //     ctxs[8].moveTo(houghImage.width / 2, 0);
-        //     ctxs[8].lineTo(houghImage.width / 2, houghImage.height);
-        //     ctxs[8].stroke()
-
-        //     ctxs[8].scale(2, 2)
-        //     ctxs[8].drawImage(canvases[8],0, 0)
-
-        //     let peaks = output[1];
-        //     console.log(peaks)
-
-        //     for(let i = 0; i < peaks.length; i++)
-        //     {
-        //         let peak = peaks[i];
-        //         let r = peak[0];
-        //         let angle = peak[1];
-        //         let rad = (angle) * (Math.PI / 180);
-        //         let x = r * Math.cos(rad) + segment.xMin;
-        //         let y = r * Math.sin(rad) + segment.yMin;
-
-        //         ctxs[9].beginPath();
-        //         ctxs[9].lineWidth = "1";
-        //         ctxs[9].strokeStyle = "red";
-        //         ctxs[9].moveTo(x, y);
-        //         //ctxs[9].lineTo(x +  100, y);
-        //         let l = 0
-        //         if(angle < 0)
-        //         {
-        //             angle += 90;
-        //             l = segment.width;
-        //         }
-        //         else
-        //         {
-        //             angle -= 90;
-        //             l = segment.height;
-        //         }
-
-        //         ctxs[9].lineTo(x + Math.cos((angle) * (Math.PI / 180)) * l, y + ((angle) * (Math.PI / 180)) * l);
-        //         ctxs[9].stroke()
-        //     }
-        // }
-//#endregion
-        
         //record time
         console.log("After analyzing all segments: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
-        ////#region for testing
-        // let test2 = 0;
+        tempImageData = ctxs[2].getImageData(0, 0, size[0], size[1]);
+        tempCtx.putImageData(tempImageData, 0, 0);
 
-        // console.log(segments.length)
-        // for(let i = 0; i < segments[test2].data.length; i++)
-        // {
-        //     for(let j = 0; j < segments[test2].data[i].length; j++)
-        //     {
-        //         if(segments[test2].data[i][j][0] == 255)
-        //         {
-        //             kMeansImageDatas[1].data[i + segments[test2].yMin][j + segments[test2].xMin] = [255, 255, 255, 255];
-        //         }
-        //     }
-        // }
-
-        // for(let i = 0; i < segments.length; i++)
-        // {
-        //     tempCtx.beginPath();
-        //     tempCtx.lineWidth = "2";
-        //     tempCtx.strokeStyle = "red";
-        //     tempCtx.rect(segments[i].xMin, segments[i].yMin, segments[i].xMax - segments[i].xMin, segments[i].yMax - segments[i].yMin);
-        //     tempCtx.stroke();
-        // }
-
-        // let test = tempCtx.getImageData(0, 0, size[0], size[1]);
-        // ctxs[2].putImageData(test, 0, 0);
+        for(let i = 0; i < segments.length; i++)
+        {
+            tempCtx.beginPath();
+            tempCtx.lineWidth = "1";
+            tempCtx.strokeStyle = "white";
+            tempCtx.rect(segments[i].xMin, segments[i].yMin, segments[i].xMax - segments[i].xMin, segments[i].yMax - segments[i].yMin);
+            tempCtx.stroke();
+        }
         
-        // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
-        // ctxs[8].putImageData(tempImageData, 0, 0);
-        // //#endregion
+        ctxs[2].putImageData(tempCtx.getImageData(0, 0, size[0], size[1]), 0, 0);
 
         console.log("Total time: " + (Date.now() - startTime) + " miliseconds")
     }
