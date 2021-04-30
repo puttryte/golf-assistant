@@ -56,49 +56,105 @@ function main()
             results.push(r);
         }
 
-        let timeInterval = 2.5 / (images.length - 1); //in seconds
-        let stdDiameter = 1.680; //in inches
-        let previousY = -1;
+        let prevFrameInfo = [,];
 
         for(let i = 0; i < results.length; i++)
         {
             console.log("----------------");
             console.log("SEQUENCE " + (i + 1));
 
-            let ballCoorY = results[i][0][0][0];
-            let ballCoorX = results[i][0][0][1];
-            let ballRadius = results[i][0][0][2];
+            let ballInfo = results[i][0][0];
+            let putterInfo = results[i][1][0];
 
-            if(previousY > -1)
+            if(prevFrameInfo[0] != null)
             {
-                console.log("Ball's Coordinates => X: " + ballCoorX + " Y: " + ballCoorY + " radius: " + ballRadius);
+                outputResultsandAnalysis(ballInfo, putterInfo, prevFrameInfo);
 
-                let ballDiameter = ballRadius * 2;
-                let distance = previousY - ballCoorY;
-                let relativeSpeed = distance / ballDiameter;
-                let realSpeed = (relativeSpeed * stdDiameter) / timeInterval;
-
-                realSpeed = Math.round(realSpeed * 100) / 100;
-                console.log("Ball's Speed => " + realSpeed + " inches / second");
             }
-            
-            previousY = ballCoorY;
-            
-            
-            //let putterAngles = results[i][1];
-            // console.log("Putter's UpperLeftBounds => X: " + putterAngles[0][3] + " Y: " + putterAngles[0][4]);
-            // console.log("Putter's LowerRightBounds => X: " + putterAngles[0][5] + " Y: " + putterAngles[0][6]);
+            else if(prevFrameInfo[1] == null && putterInfo != null)
+            {
+                prevFrameInfo[1] = [ballInfo[0] , ballInfo[1]];
+                prevFrameInfo[3] = putterInfo[6] - putterInfo[4];
+            }
 
-            // let color = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
-            // for(let j = 0; j < putterAngles.length; j++)
-            // {
-            //     console.log(color[j] + " Line:");
-            //     console.log("\tDistance from UpperLeft Bound: " + putterAngles[j][0]);
-            //     console.log("\tLine Angle: " + putterAngles[j][2]);
-            // }
+            prevFrameInfo[0] = [ballInfo[0] , ballInfo[1]];
+            prevFrameInfo[2] = putterInfo[4] + Math.round((putterInfo[6] - putterInfo[4]) / 2);
         }
     }
     
+}
+
+function outputResultsandAnalysis(ballInfo, putterInfo, prevFrameInfo)
+{
+    //ballInfo = array of 3
+    //0 = y of center
+    //1 = x of center
+    //2 = radius of houghCircle
+
+    //putterInfo = array of 7
+    //0 = distance from upper left of bounding box
+    //1 = angle of the polar coordinates
+    //2 = angle of the line in context of HTML canvas arc function: 0 from the right then counterclockwise
+    //3 = x coordinates of upper left bounding box
+    //4 = y coordinates of upper left bounding box
+    //5 = x coordinates of lower right bounding box
+    //6 = y coordinates of lower right bounding box
+
+    //prevFrameInfo
+    //0 = y, x coordinate of the previous frame's ball
+    //1 = y, x coordinate of the initial frame's ball
+    //2 = y coordinate of the previous frame's putter
+    //3 = initial putter thickness
+    let timeInterval = 2.5 / (SequenceImages.images.length - 1); //in seconds
+    let stdDiameter = 1.680; //in inches
+
+    let ballCoorX = ballInfo[1];
+    let ballCoorY = ballInfo[0];
+    let ballRadius = ballInfo[2];
+
+    let prevBallYCoor = prevFrameInfo[0][0];
+    let prevBallXCoor = prevFrameInfo[0][1];
+
+    console.log("Ball's Coordinates => X: " + ballCoorX + " Y: " + ballCoorY + " radius: " + ballRadius);
+
+    let ballDiameter = ballRadius * 2;
+    let distance = prevBallYCoor - ballCoorY;
+    let relativeSpeed = distance / ballDiameter;
+    let realSpeed = (relativeSpeed * stdDiameter) / timeInterval;
+
+    realSpeed = Math.round(realSpeed * 100) / 100;
+    console.log("Ball's Speed => " + realSpeed + " inches / second");
+
+    let ballAngle = 0;
+
+    if(realSpeed > 1)
+    {
+        ballAngle = Math.atan2(prevFrameInfo[1][0] - prevBallYCoor, prevFrameInfo[1][1] - prevBallXCoor) * (180 / Math.PI);
+        ballAngle = Math.round(ballAngle);
+    }
+
+    console.log("Ball's Angle => " + ballAngle + "\xB0");
+    
+    let putterXCoor = putterInfo[3] + Math.round((putterInfo[5] - putterInfo[3]) / 2);
+    let putterYCoor = putterInfo[4] + Math.round((putterInfo[6] - putterInfo[4]) / 2);
+    let putterAngle = -1 * putterInfo[2];
+    let putterThickness = prevFrameInfo[3];
+    let prevPutterYCoor = prevFrameInfo[2];
+    let stdThickness = (putterThickness / ballDiameter) * stdDiameter; 
+
+    if(putterAngle< -180)
+    {
+        putterAngle += 360
+    }
+
+    console.log("\nPutter's Coordinates => X: " + putterXCoor + " Y: " + putterYCoor);
+    console.log("Putter's Angle => " + (putterAngle - 0) + "\xB0");
+
+    distance = prevPutterYCoor - putterYCoor;
+    relativeSpeed = distance / putterThickness;
+    realSpeed = (relativeSpeed * stdThickness) / timeInterval;
+    realSpeed = Math.round(realSpeed * 100) / 100;
+    console.log("Putter's Speed => " + realSpeed + " inches / second");
 }
 
 //fuction gets trigger when the apply button is pressed.
