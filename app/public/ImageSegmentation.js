@@ -73,51 +73,234 @@ function main()
 function Apply()
 {
     canvases = document.getElementsByTagName("canvas");
+    var canvasContext = canvases[0].getContext('2d');
     ctxs = new Array(canvases.length);
     var imgArr = document.getElementById("inputArray").value;
-    var splitArr = imgArr.split('|');
-    console.log(splitArr[0]);
-    console.log(splitArr);
+    var splitArr = imgArr.split('|,');
+    var imageShownIndex = 0;
+    var prevButton = document.getElementById('prevButton');
+    var nextButton = document.getElementById('nextButton');
+    prevButton.onclick = function () {
+        imageShownIndex = (imageShownIndex === splitArr.length - 1) ? 0 : imageShownIndex - 1;
+        updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
+    };
+    nextButton.onclick = function () {
+        imageShownIndex = (imageShownIndex === splitArr.length - 1) ? 0 : imageShownIndex + 1;
+        updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
+    };
+
+    updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
+
     //for record timing purposes
     startTime = Date.now();
     currentTime = Date.now();
 
     //get the image selected and declare the image variable.
     // let mySelect = document.getElementById("testImage");
-    let image = new Image();
-    image.src = splitArr[0];
-    console.log("***********" + image.src);
+    // let image = new Image();
+    // image.src = splitArr[0];
+    //
+    // //start the function when the image is done loading
+    // image.onload = function()
+    // {
+    //     //scale the image
+    //     let size = ImageProcessing.GetImageScale(image.width, image.height, imageSize);
+    //
+    //     //using the dimension of scaled image, scale all the canvases.
+    //     for(let i = 0; i < canvases.length; i++)
+    //     {
+    //         canvases[i].width = size[0];
+    //         canvases[i].height = size[1];
+    //         ctxs[i] = canvases[i].getContext('2d');
+    //         ctxs[i].imageSmoothinEnabled = true;
+    //     }
+    //
+    //     //set one canvas in memory so all other canvases are for output only
+    //     let tempCanvas = document.createElement("canvas");
+    //     tempCanvas.width = size[0];
+    //     tempCanvas.height = size [1];
+    //
+    //     //set up context
+    //     let tempCtx = tempCanvas.getContext('2d');
+    //     tempCtx.imageSmoothingEnabled = true;
+    //     tempCtx.drawImage(image, 0, 0, size[0], size[1]);
+    //
+    //     //get image data
+    //     let imageData = new MyImageData(
+    //         size[0],
+    //         size[1],
+    //         tempCtx.getImageData(0, 0, size[0], size[1]).data
+    //     )
+    //
+    //     //used for output
+    //     let tempImageData = new ImageData(size[0], size[1]);
+    //
+    //     //convert image data to Uint8ClampedArray then output to canvas
+    //     // tempImageData.data.set(imageData.getUint8Array());
+    //     // ctxs[0].putImageData(tempImageData, 0, 0);
+    //
+    //     //record time
+    //     console.log("Showing Original Image: " + (Date.now() - currentTime) + " miliseconds")
+    //     currentTime = Date.now();
+    //
+    //     //normalize the image's brighness level
+    //     ImageProcessing.NormalizeImageBrightness(imageData, normalBrightness);
+    //     // tempImageData.data.set(imageData.getUint8Array());
+    //     // ctxs[1].putImageData(tempImageData, 0, 0);
+    //
+    //     //record time.
+    //     console.log("After normalizing the image: " + (Date.now() - currentTime) + " miliseconds")
+    //     currentTime = Date.now();
+    //
+    //     //get the selected colorspace to use, defaulted to CMYK
+    //     let colorSpace = 1;
+    //     let kMeansImageDatas = KMeans.ProcessImage(imageData, colorSpace, cluster, iteration);
+    //
+    //     //record time.
+    //     // tempImageData.data.set(kMeansImageDatas[0].getUint8Array());
+    //     // ctxs[3].putImageData(tempImageData, 0, 0);
+    //
+    //     // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
+    //     // ctxs[4].putImageData(tempImageData, 0, 0);
+    //
+    //     // tempImageData.data.set(kMeansImageDatas[2].getUint8Array());
+    //     // ctxs[5].putImageData(tempImageData, 0, 0);
+    //
+    //     console.log("After K-means Algorithm: " + (Date.now() - currentTime) + " miliseconds")
+    //     currentTime = Date.now();
+    //
+    //     // //denoise the image.
+    //     // //erode the image and inflate it.
+    //     // //pixels with radius equal to the numOfErosion should disappears.
+    //     ImageProcessing.Erosion(kMeansImageDatas[1], numOfErosion);
+    //     ImageProcessing.Dilation(kMeansImageDatas[1], numOfDilation);
+    //
+    //     // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
+    //     // ctxs[6].putImageData(tempImageData, 0, 0);
+    //
+    //     //record time
+    //     console.log("After Denoising Clusters: " + (Date.now() - currentTime) + " miliseconds")
+    //     currentTime = Date.now();
+    //
+    //     //mophological closing
+    //     //infate it then erode it back
+    //     //any holes or cravases would get smaller by the number equal to the numOfDilation
+    //     ImageProcessing.Dilation(kMeansImageDatas[1], numOfDilation);
+    //     ImageProcessing.Erosion(kMeansImageDatas[1], numOfErosion);
+    //
+    //     // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
+    //     // ctxs[7].putImageData(tempImageData, 0, 0);
+    //
+    //     //record time
+    //     console.log("After Morphologically Closing: " + (Date.now() - currentTime) + " miliseconds")
+    //     currentTime = Date.now();
+    //
+    //     //sepated the golf ball and the putter
+    //     //HorizontalSeparation(ctxs[7], ctxs[9], ctxs[10]);
+    //     let segments = GetSegments(kMeansImageDatas[1]);
+    //
+    //     // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
+    //     // ctxs[8].putImageData(tempImageData, 0, 0);
+    //
+    //     //record time
+    //     console.log("After Getting all the segments: " + (Date.now() - currentTime) + " miliseconds")
+    //     currentTime = Date.now();
+    //
+    //     tempImageData.data.set(imageData.getUint8Array());
+    //     ctxs[0].putImageData(tempImageData, 0, 0);
+    //
+    //     for(let i = 0; i < segments.length; i++)
+    //     {
+    //         tempCtx.beginPath();
+    //         tempCtx.lineWidth = "2";
+    //         tempCtx.strokeStyle = "red";
+    //         tempCtx.rect(segments[i].xMin, segments[i].yMin, segments[i].xMax - segments[i].xMin, segments[i].yMax - segments[i].yMin);
+    //         tempCtx.stroke();
+    //     }
+    //
+    //     let test = tempCtx.getImageData(0, 0, size[0], size[1]);
+    //     ctxs[0].putImageData(test, 0, 0);
+    //
+    //     // //denoise the separated parts
+    //     // ImageProcessing.Erosion(ctxs[9], ctxs[9], 2);
+    //     // ImageProcessing.Dilation(ctxs[9], ctxs[9], 2);
+    //
+    //     // ImageProcessing.Erosion(ctxs[10], ctxs[10], 2);
+    //     // ImageProcessing.Dilation(ctxs[10], ctxs[10], 2);
+    //
+    //     // //get the grass mask
+    //     // InvertCanvasBW(ctxs[7], ctxs[8]);
+    //
+    //     // //record time.
+    //     // console.log("After prossecing the masks: " + (Date.now() - currentTime) + " miliseconds")
+    //     // currentTime = Date.now();
+    //
+    //     // //get the original images masked parts.
+    //     // ApplyMask(ctxs[0], ctxs[8], ctxs[11]);
+    //     // ApplyMask(ctxs[0], ctxs[9], ctxs[12]);
+    //     // ApplyMask(ctxs[0], ctxs[10], ctxs[13]);
+    //
+    //     // //recode time.
+    //     // console.log("After applying the masks: " + (Date.now() - currentTime) + " miliseconds")
+    //     // currentTime = Date.now();
+    //
+    //     // //apply a bounding box based the mask.
+    //     // ctxs[2].drawImage(image, 0, 0, size[0], size[1]);
+    //     // BoundingBox(ctxs[9], ctxs[2], 1);
+    //     // BoundingBox(ctxs[10], ctxs[2], 0);
+    //
+    //     // //record time
+    //     // console.log("Showing Bounding Box: " + (Date.now() - currentTime) + " miliseconds")
+    //     // currentTime = Date.now();
+    //
+    //     //record total time
+    //     console.log("Total time: " + (Date.now() - startTime) + " miliseconds")
+    //}
+}
 
-    //start the function when the image is done loading
+function updateImage(imgArr, index, canvas, canvasContext) {
+
+    console.log("This is the index " + index);
+    console.log("this is the size of the array passed " + imgArr.length);
+    let image = new Image();
+    image.src = imgArr[index];
+    console.log(image.width + "   " + image.height);
+    canvasContext.clearRect(0, 0, image.height, image.width);
     image.onload = function()
     {
         //scale the image
         let size = ImageProcessing.GetImageScale(image.width, image.height, imageSize);
 
         //using the dimension of scaled image, scale all the canvases.
-        for(let i = 0; i < canvases.length; i++)
-        {
-            canvases[i].width = size[0];
-            canvases[i].height = size[1];
-            ctxs[i] = canvases[i].getContext('2d');
-            ctxs[i].imageSmoothinEnabled = true;
-        }
+        // for(let i = 0; i < canvases.length; i++)
+        // {
+        //     canvases[i].width = size[0];
+        //     canvases[i].height = size[1];
+        //     ctxs[i] = canvases[i].getContext('2d');
+        //     ctxs[i].imageSmoothinEnabled = true;
+        // }
+
+
+        canvas.width = size[0];
+        canvas.height = size[1];
+        canvasContext.imageSmoothinEnabled = true;
+
 
         //set one canvas in memory so all other canvases are for output only
-        let tempCanvas = document.createElement("canvas");
-        tempCanvas.width = size[0];
-        tempCanvas.height = size [1];
+        // let tempCanvas = document.createElement("canvas");
+        // tempCanvas.width = size[0];
+        // tempCanvas.height = size [1];
 
         //set up context
-        let tempCtx = tempCanvas.getContext('2d');
-        tempCtx.imageSmoothingEnabled = true;
-        tempCtx.drawImage(image, 0, 0, size[0], size[1]);
+        // let tempCtx = tempCanvas.getContext('2d');
+        // tempCtx.imageSmoothingEnabled = true;
+        canvasContext.drawImage(image, 0, 0, size[0], size[1]);
 
         //get image data
         let imageData = new MyImageData(
             size[0],
             size[1],
-            tempCtx.getImageData(0, 0, size[0], size[1]).data
+            canvasContext.getImageData(0, 0, size[0], size[1]).data
         )
 
         //used for output
@@ -153,7 +336,7 @@ function Apply()
 
         // tempImageData.data.set(kMeansImageDatas[2].getUint8Array());
         // ctxs[5].putImageData(tempImageData, 0, 0);
-        
+
         console.log("After K-means Algorithm: " + (Date.now() - currentTime) + " miliseconds")
         currentTime = Date.now();
 
@@ -195,19 +378,19 @@ function Apply()
         currentTime = Date.now();
 
         tempImageData.data.set(imageData.getUint8Array());
-        ctxs[0].putImageData(tempImageData, 0, 0);
+        canvasContext.putImageData(tempImageData, 0, 0);
 
         for(let i = 0; i < segments.length; i++)
         {
-            tempCtx.beginPath();
-            tempCtx.lineWidth = "2";
-            tempCtx.strokeStyle = "red";
-            tempCtx.rect(segments[i].xMin, segments[i].yMin, segments[i].xMax - segments[i].xMin, segments[i].yMax - segments[i].yMin);
-            tempCtx.stroke();
+            canvasContext.beginPath();
+            canvasContext.lineWidth = "2";
+            canvasContext.strokeStyle = "red";
+            canvasContext.rect(segments[i].xMin, segments[i].yMin, segments[i].xMax - segments[i].xMin, segments[i].yMax - segments[i].yMin);
+            canvasContext.stroke();
         }
 
-        let test = tempCtx.getImageData(0, 0, size[0], size[1]);
-        ctxs[0].putImageData(test, 0, 0);
+        let test = canvasContext.getImageData(0, 0, size[0], size[1]);
+        canvasContext.putImageData(test, 0, 0);
 
         // //denoise the separated parts
         // ImageProcessing.Erosion(ctxs[9], ctxs[9], 2);
@@ -269,7 +452,7 @@ function HorizontalSeparation(source, ctx1, ctx2)
     {
         for(let j = i; j < (i + row); j += 4)
         {
-            if(imageData.data[j] == 255)
+            if(imageData.data[j] === 255)
             {
                 verticalCount[(j % row)/4] += 1;
             }

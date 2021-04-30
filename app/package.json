@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@capacitor-community/camera-preview": "^1.2.1",
+    "@capacitor-community/camera-preview": "git+ssh://https://github.com/capacitor-community/camera-preview.git#master",
     "@capacitor/android": "^2.4.7",
-    "@capacitor/core": "2.4.6",
+    "@capacitor/core": "^2.4.6",
     "@capacitor/ios": "^2.4.7",
     "@ionic-native/camera-preview": "^5.32.0",
-    "@ionic-native/core": "^5.31.1",
+    "@ionic-native/core": "^5.32.1",
     "@ionic-native/file": "^5.31.1",
     "@ionic-native/video-capture-plus": "^5.31.1",
     "@ionic/pwa-elements": "^3.0.2",
@@ -24,8 +24,7 @@
     "@types/react-dom": "^16.9.12",
     "@types/react-router": "^5.1.13",
     "@types/react-router-dom": "^5.1.7",
-    "antd": "^4.15.2",
-    "cordova-plugin-camera-preview": "git+https://github.com/cordova-plugin-camera-preview/cordova-plugin-camera-preview.git",
+    "antd": "^4.15.3",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-video-capture-plus": "^1.0.0",
@@ -55,13 +54,15 @@
     "workbox-range-requests": "^5.1.4",
     "workbox-routing": "^5.1.4",
     "workbox-strategies": "^5.1.4",
-    "workbox-streams": "^5.1.4"
+    "workbox-streams": "^5.1.4",
+    "yarn": "^1.22.10"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "update:packages": "npm install git+ssh://https://github.com/capacitor-community/camera-preview.git#master"
   },
   "eslintConfig": {
     "extends": [
