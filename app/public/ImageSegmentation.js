@@ -60,7 +60,7 @@ function main()
     // //declare a behavior of the apply button
     // document.getElementById("applybtn").addEventListener('click', Apply);
 
-    document.getElementById("applybtn").addEventListener('click', Apply);
+    document.getElementById("applybtn").addEventListener('click', toApply);
 
     //var imgArr = document.getElementById("inputArray").value;
 
@@ -70,246 +70,284 @@ function main()
 }
 
 //fuction gets trigger when the apply button is pressed.
-function Apply()
+function toApply()
 {
     canvases = document.getElementsByTagName("canvas");
     var canvasContext = canvases[0].getContext('2d');
     var imgArr = document.getElementById("inputArray").value;
     var splitArr = imgArr.split('|,');
-    var imageShownIndex = 0;
-    var prevButton = document.getElementById('prevButton');
-    var nextButton = document.getElementById('nextButton');
+    var tempArr = [];
+    var getResultsButton = document.getElementById('applybtn');
+    // var imageShownIndex = 0;
+    // var prevButton = document.getElementById('prevButton');
+    // var nextButton = document.getElementById('nextButton');
     canvasContext.clearRect(0, 0, canvases[0].height, canvases[0].width);
-    prevButton.onclick = function () {
-        imageShownIndex = (imageShownIndex === splitArr.length - 1) ? 0 : imageShownIndex - 1;
-        updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
-    };
-    nextButton.onclick = function () {
-        imageShownIndex = (imageShownIndex === splitArr.length - 1) ? 0 : imageShownIndex + 1;
-        updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
-    };
+    for(let i = 0; i < splitArr.length; i++)
+    {
+        tempArr[i] = new Image();
+        tempArr[i].src = splitArr[i];
+    }
 
-    updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
+    console.log(tempArr.legnth);
+
+    // var goNow = [];
+    // goNow = tempArr;
+
+    getResultsButton.onclick = function()
+    {
+        let results = [];
+
+        for(let i = 0; i < tempArr.length; i++)
+        {
+            let r = Apply(tempArr[i].src, i, canvases);
+
+            results.push(r);
+        }
+
+        let timeInterval = 2.5 / (tempArr.length - 1); //in seconds
+        let stdDiameter = 1.680; //in inches
+        let previousY = -1;
+
+        for(let i = 0; i < results.length; i++)
+        {
+            console.log("----------------");
+            console.log("SEQUENCE " + (i + 1));
+
+            let ballCoorY = results[i][0][0][0];
+            let ballCoorX = results[i][0][0][1];
+            let ballRadius = results[i][0][0][2];
+
+            if(previousY > -1)
+            {
+                console.log("Ball's Coordinates => X: " + ballCoorX + " Y: " + ballCoorY + " radius: " + ballRadius);
+
+                let ballDiameter = ballRadius * 2;
+                let distance = previousY - ballCoorY;
+                let relativeSpeed = distance / ballDiameter;
+                let realSpeed = (relativeSpeed * stdDiameter) / timeInterval;
+
+                realSpeed = Math.round(realSpeed * 100) / 100;
+                console.log("Ball's Speed => " + realSpeed + " inches / second");
+            }
+            
+            previousY = ballCoorY;
+        }
+    }
+    // prevButton.onclick = function () {
+    //     imageShownIndex = (imageShownIndex === splitArr.length - 1) ? 0 : imageShownIndex - 1;
+    //     updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
+    // };
+    // nextButton.onclick = function () {
+    //     imageShownIndex = (imageShownIndex === splitArr.length - 1) ? 0 : imageShownIndex + 1;
+    //     updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
+    // };
+
+    // updateImage(splitArr, imageShownIndex, canvases[0], canvasContext);
 
     //for record timing purposes
+
+}
+
+function Apply(image, sequence, canvases)
+{
+    console.log("Image: " + image.src);
     startTime = Date.now();
     currentTime = Date.now();
 
+    //start the function when the image is done loading
+    var ctxs = new Array(canvases.length);
 
-}
+    //scale the image
+    let size = ImageProcessing.GetImageScale(image.width, image.height, imageSize);
 
-function updateImage(imgArr, index, canvas, canvasContext)
-{
-    let image = new Image();
-    image.src = imgArr[index];
-    console.log(image.width + "   " + image.height);
-    canvasContext.clearRect(0, 0, image.height, image.width);
-    image.onload = function()
+    //using the dimension of scaled image, scale all the canvases.
+    for(let i = sequence; i < canvases.length; i++)
     {
-        //scale the image
-        let size = ImageProcessing.GetImageScale(image.width, image.height, imageSize);
+        canvases[i].width = size[0];
+        canvases[i].height = size[1];
+        ctxs[i] = canvases[i].getContext('2d');
+        ctxs[i].imageSmoothinEnabled = true;
+    }
 
-        //using the dimension of scaled image, scale all the canvases.
-        // for(let i = 0; i < canvases.length; i++)
-        // {
-        //     canvases[i].width = size[0];
-        //     canvases[i].height = size[1];
-        //     ctxs[i] = canvases[i].getContext('2d');
-        //     ctxs[i].imageSmoothinEnabled = true;
-        // }
+    //set one canvas in memory so all other canvases are for output only
+    let tempCanvas = document.createElement("canvas");
+    tempCanvas.width = size[0];
+    tempCanvas.height = size [1];
 
+    //set up context
+    let tempCtx = tempCanvas.getContext('2d');
+    tempCtx.imageSmoothingEnabled = true;
+    tempCtx.drawImage(image, 0, 0, size[0], size[1]);
 
-        canvas.width = size[0];
-        canvas.height = size[1];
-        canvasContext.imageSmoothinEnabled = true;
+    //get image data
+    let imageData = new MyImageData(
+        size[0],
+        size[1],
+        tempCtx.getImageData(0, 0, size[0], size[1]).data
+    )
 
+    //used for output
+    let tempImageData = new ImageData(size[0], size[1]);
 
-        //set one canvas in memory so all other canvases are for output only
-        // let tempCanvas = document.createElement("canvas");
-        // tempCanvas.width = size[0];
-        // tempCanvas.height = size [1];
+    //convert image data to Uint8ClampedArray then output to canvas
+    tempImageData.data.set(imageData.getUint8Array());
+    ctxs[sequence].putImageData(tempImageData, 0, 0);
 
-        //set up context
-        // let tempCtx = tempCanvas.getContext('2d');
-        // tempCtx.imageSmoothingEnabled = true;
-        canvasContext.drawImage(image, 0, 0, size[0], size[1]);
+    //record time
+    console.log("Showing Original Image: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
 
-        //get image data
-        let imageData = new MyImageData(
-            size[0],
-            size[1],
-            canvasContext.getImageData(0, 0, size[0], size[1]).data
-        );
+    //normalize the image's brighness level
+    ImageProcessing.NormalizeImageBrightness(imageData, normalBrightness);
 
-        //used for output
-        let tempImageData = new ImageData(size[0], size[1]);
+    //record time.
+    console.log("After normalizing the image: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
 
-        //convert image data to Uint8ClampedArray then output to canvas
-        tempImageData.data.set(imageData.getUint8Array());
-        canvasContext.putImageData(tempImageData, 0, 0);
+    //get the selected colorspace to use, defaulted to CMYK
+    let colorSpace = 1
+    let kMeansImageDatas = KMeans.ProcessImage(imageData, colorSpace, cluster, iteration);
+    
+    //record time.
+    console.log("After K-means Algorithm: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
 
-        //record time
-        console.log("Showing Original Image: " + (Date.now() - currentTime) + " miliseconds")
-        currentTime = Date.now();
+    // //denoise the image.
+    // //erode the image and inflate it.
+    // //pixels with radius equal to the numOfErosion should disappears.
+    ImageProcessing.Erosion(kMeansImageDatas[1], numOfErosion);
+    ImageProcessing.Dilation(kMeansImageDatas[1], numOfDilation);
 
-        //normalize the image's brighness level
-        ImageProcessing.NormalizeImageBrightness(imageData, normalBrightness);
-        // tempImageData.data.set(imageData.getUint8Array());
-        // ctxs[1].putImageData(tempImageData, 0, 0);
+    //record time
+    console.log("After Denoising Clusters: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
 
-        //record time.
-        console.log("After normalizing the image: " + (Date.now() - currentTime) + " miliseconds")
-        currentTime = Date.now();
+    //mophological closing
+    //infate it then erode it back
+    //any holes or cravases would get smaller by the number equal to the numOfDilation
+    ImageProcessing.Dilation(kMeansImageDatas[1], numOfDilation);
+    ImageProcessing.Erosion(kMeansImageDatas[1], numOfErosion);
 
-        //get the selected colorspace to use, defaulted to CMYK
-        let colorSpace = 1;
-        let kMeansImageDatas = KMeans.ProcessImage(imageData, colorSpace, cluster, iteration);
+    //record time
+    console.log("After Morphologically Closing: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
 
-        //record time.
-        // tempImageData.data.set(kMeansImageDatas[0].getUint8Array());
-        // ctxs[3].putImageData(tempImageData, 0, 0);
+    //sepated the golf ball and the putter
+    //HorizontalSeparation(ctxs[7], ctxs[9], ctxs[10]);
+    let segments = GetSegments(kMeansImageDatas[1]);
 
-        // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
-        // ctxs[4].putImageData(tempImageData, 0, 0);
+    //record time
+    console.log("After Getting all the segments: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
 
-        // tempImageData.data.set(kMeansImageDatas[2].getUint8Array());
-        // ctxs[5].putImageData(tempImageData, 0, 0);
+    let peaks = [];
+    let diameter = 0;
+    let detectionRange = [size[0] * (1 / 16), size[0] * (5 / 8)]
 
-        console.log("After K-means Algorithm: " + (Date.now() - currentTime) + " miliseconds")
-        currentTime = Date.now();
-
-        // //denoise the image.
-        // //erode the image and inflate it.
-        // //pixels with radius equal to the numOfErosion should disappears.
-        ImageProcessing.Erosion(kMeansImageDatas[1], numOfErosion);
-        ImageProcessing.Dilation(kMeansImageDatas[1], numOfDilation);
-
-        // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
-        // ctxs[6].putImageData(tempImageData, 0, 0);
-
-        //record time
-        console.log("After Denoising Clusters: " + (Date.now() - currentTime) + " miliseconds")
-        currentTime = Date.now();
-
-        //mophological closing
-        //infate it then erode it back
-        //any holes or cravases would get smaller by the number equal to the numOfDilation
-        ImageProcessing.Dilation(kMeansImageDatas[1], numOfDilation);
-        ImageProcessing.Erosion(kMeansImageDatas[1], numOfErosion);
-
-        // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
-        // ctxs[7].putImageData(tempImageData, 0, 0);
-
-        //record time
-        console.log("After Morphologically Closing: " + (Date.now() - currentTime) + " miliseconds")
-        currentTime = Date.now();
-
-        //sepated the golf ball and the putter
-        //HorizontalSeparation(ctxs[7], ctxs[9], ctxs[10]);
-        let segments = GetSegments(kMeansImageDatas[1]);
-
-        // tempImageData.data.set(kMeansImageDatas[1].getUint8Array());
-        // ctxs[8].putImageData(tempImageData, 0, 0);
-
-        //record time
-        console.log("After Getting all the segments: " + (Date.now() - currentTime) + " miliseconds")
-        currentTime = Date.now();
-
-        let peaks = [];
-        let diameter = 0;
-        let detectionRange = [size[0] * (1 / 16), size[0] * (5 / 8)]
-
-        //checks segments length for analysis
-        if(segments.length === 0)
+    //checks segments length for analysis
+    if(segments.length == 0)
+    {
+        console.log("-----> No Object Dectected!");
+    }
+    else if(segments.length == 1)
+    {
+        segments.push(segments[0]);
+        diameter = segments[0].height / 2;
+    }
+    else if(segments.length > 2)
+    {
+        segments = IsolateSegments(segments, detectionRange[0], detectionRange[1]);
+        
+        if(segments[0].height < segments[0].width)
         {
-            console.log("-----> No Object Dectected!");
-        }
-        else if(segments.length === 1)
-        {
-            segments.push(segments[0]);
-            diameter = segments[0].height / 2;
-        }
-        else if(segments.length > 2)
-        {
-            segments = IsolateSegments(segments, detectionRange[0], detectionRange[1]);
-
-            if(segments[0].height < segments[0].width)
-            {
-                diameter = segments[0].height;
-            }
-            else
-            {
-                diameter = segments[0].width;
-            }
-        }
-
-        if(segments.length === 2)
-        {
-            let radius = Math.round(diameter / 2);
-            let houghCircleOutput = HoughTransform.HoughCircleTranform(segments[0], radius);
-            let houghLineOutput = HoughTransform.HoughLineTranform(segments[1]);
-
-            peaks[0] = HoughTransform.GetHoughCirclePeaks(houghCircleOutput , 0.99, 5);
-            peaks[1] = HoughTransform.GetHoughLinePeaks(houghLineOutput , 0.75, 200);
-
-            for(let i = 0; i < peaks[0].length; i++)
-            {
-                peaks[0][i][1] += segments[0].xMin - radius;
-                peaks[0][i][0] += segments[0].yMin - radius;
-            }
-
-            for(let i = 0; i < peaks[1].length; i++)
-            {
-                let r = peaks[1][i][0];
-                let angle = peaks[1][i][1];
-                let angle2 = angle + 270;
-
-                if(angle < 0)
-                {
-                    r *= -1;
-                    angle *= -1;
-                    angle2 = (90 - angle) ;
-                }
-
-                peaks[1][i] = [
-                    r,
-                    angle,
-                    angle2,
-                    segments[1].xMin,
-                    segments[1].yMin,
-                    segments[1].xMax,
-                    segments[1].yMax
-                ];
-            }
-            if (peaks[1].length > 1)
-            {
-                peaks[1].sort(function(a, b){
-                    return a[0]-b[0]
-                });
-                peaks[1] = [peaks[1][0]];
-            }
-
-
-            HoughTransform.ShowHoughCircle(canvasContext, canvasContext, segments[0], peaks[0], radius);
-            HoughTransform.ShowHoughLines(canvasContext, canvasContext, segments[1], peaks[1]);
+            diameter = segments[0].height;
         }
         else
         {
-            console.log("-----> More Than 3 objects detected!")
+            diameter = segments[0].width;
+        }
+    }
+
+    if(segments.length == 2)
+    {
+        let radius = Math.round(diameter / 2);
+        let houghCircleOutput = HoughTransform.HoughCircleTranform(segments[0], radius);
+        let houghLineOutput = HoughTransform.HoughLineTranform(segments[1])
+
+        peaks[0] = HoughTransform.GetHoughCirclePeaks(houghCircleOutput , 0.99, 5);
+        peaks[1] = HoughTransform.GetHoughLinePeaks(houghLineOutput , 0.75, 5);
+
+        for(let i = 0; i < peaks[0].length; i++)
+        {
+            let x = peaks[0][i][1] + segments[0].xMin - radius;
+            let y = peaks[0][i][0] + segments[0].yMin - radius;
+
+            peaks[0][i] = [y, x, radius];
         }
 
-        //record time
-        console.log("After analyzing all segments: " + (Date.now() - currentTime) + " miliseconds");
-        currentTime = Date.now();
+        for(let i = 0; i < peaks[1].length; i++)
+        {
+            let r = peaks[1][i][0];
+            let angle = peaks[1][i][1];
+            let angle2 = angle + 270;
 
-        ShowBorderAndSegment(canvasContext, canvasContext,  detectionRange[0], detectionRange[1], segments)
-        canvasContext.putImageData(canvasContext.getImageData(0, 0, size[0], size[1]), 0, 0);
+            if(angle < 0)
+            {
+                r *= -1
+                angle *= -1
+                angle2 = (90 - angle) ;
+            }
 
-        console.log("Total time: " + (Date.now() - startTime) + " miliseconds")
+            peaks[1][i] = [
+                r, 
+                angle, 
+                angle2,
+                segments[1].xMin,
+                segments[1].yMin,
+                segments[1].xMax,
+                segments[1].yMax
+            ];
+        }
 
-        return peaks;
+        if(peaks[0].length > 1)
+        {
+            peaks[0].sort(function(a, b){
+                return a[1]-b[1]
+            });
+
+            peaks[0] = [peaks[0][0]];
+        }
+
+        if(peaks[1].length > 1)
+        {
+            peaks[1].sort(function(a, b){
+                return a[0]-b[0]
+            });
+
+            peaks[1] = [peaks[1][0]];
+        }
+
+        HoughTransform.ShowHoughCircle(ctxs[sequence], ctxs[sequence], segments[0], peaks[0], radius);
+        HoughTransform.ShowHoughLines(ctxs[sequence], ctxs[sequence], segments[1], peaks[1]);
     }
+    else
+    {
+        console.log("-----> More Than 3 objects detected!")
+    }
+
+    //record time
+    console.log("After analyzing all segments: " + (Date.now() - currentTime) + " miliseconds")
+    currentTime = Date.now();
+
+    ShowBorderAndSegment(ctxs[sequence], ctxs[sequence],  detectionRange[0], detectionRange[1], segments)
+    ctxs[sequence].putImageData(ctxs[sequence].getImageData(0, 0, size[0], size[1]), 0, 0);
+
+    console.log("Total time: " + (Date.now() - startTime) + " miliseconds")
+
+    return peaks;
 }
+    
+
 
 //Analyze the image and outputs an array of Segments
 //Parameter: source : MyImageData   : from MyImageData.js
