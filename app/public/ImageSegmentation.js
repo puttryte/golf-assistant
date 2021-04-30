@@ -31,8 +31,8 @@ var iteration = 10;
 
 //for denoising and morphological closing.
 //the lower the number, the less processing it would do but the image would keep it integrity.
-var numOfErosion = 2;
-var numOfDilation = 2;
+var numOfErosion = 1;
+var numOfDilation = 1;
 
 //Start of the Process. 
 function main()
