@@ -56,25 +56,46 @@ function main()
             results.push(r);
         }
 
+        let timeInterval = 2.5 / (images.length - 1); //in seconds
+        let stdDiameter = 1.680; //in inches
+        let previousY = -1;
+
         for(let i = 0; i < results.length; i++)
         {
             console.log("----------------");
             console.log("SEQUENCE " + (i + 1));
 
-            let ballCoor = results[i][0][0];
-            let putterAngles = results[i][1];
+            let ballCoorY = results[i][0][0][0];
+            let ballCoorX = results[i][0][0][1];
+            let ballRadius = results[i][0][0][2];
 
-            console.log("Ball's Coordinates => X: " + ballCoor[1] + " Y: " + ballCoor[0]);
-            console.log("Putter's UpperLeftBounds => X: " + putterAngles[0][3] + " Y: " + putterAngles[0][4]);
-            console.log("Putter's LowerRightBounds => X: " + putterAngles[0][5] + " Y: " + putterAngles[0][6]);
-
-            let color = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
-            for(let j = 0; j < putterAngles.length; j++)
+            if(previousY > -1)
             {
-                console.log(color[j] + " Line:");
-                console.log("\tDistance from UpperLeft Bound: " + putterAngles[j][0]);
-                console.log("\tLine Angle: " + putterAngles[j][2]);
+                console.log("Ball's Coordinates => X: " + ballCoorX + " Y: " + ballCoorY + " radius: " + ballRadius);
+
+                let ballDiameter = ballRadius * 2;
+                let distance = previousY - ballCoorY;
+                let relativeSpeed = distance / ballDiameter;
+                let realSpeed = (relativeSpeed * stdDiameter) / timeInterval;
+
+                realSpeed = Math.round(realSpeed * 100) / 100;
+                console.log("Ball's Speed => " + realSpeed + " inches / second");
             }
+            
+            previousY = ballCoorY;
+            
+            
+            //let putterAngles = results[i][1];
+            // console.log("Putter's UpperLeftBounds => X: " + putterAngles[0][3] + " Y: " + putterAngles[0][4]);
+            // console.log("Putter's LowerRightBounds => X: " + putterAngles[0][5] + " Y: " + putterAngles[0][6]);
+
+            // let color = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+            // for(let j = 0; j < putterAngles.length; j++)
+            // {
+            //     console.log(color[j] + " Line:");
+            //     console.log("\tDistance from UpperLeft Bound: " + putterAngles[j][0]);
+            //     console.log("\tLine Angle: " + putterAngles[j][2]);
+            // }
         }
     }
     
@@ -214,8 +235,10 @@ function Apply(image, sequence)
 
         for(let i = 0; i < peaks[0].length; i++)
         {
-            peaks[0][i][1] += segments[0].xMin - radius;
-            peaks[0][i][0] += segments[0].yMin - radius;
+            let x = peaks[0][i][1] + segments[0].xMin - radius;
+            let y = peaks[0][i][0] + segments[0].yMin - radius;
+
+            peaks[0][i] = [y, x, radius];
         }
 
         for(let i = 0; i < peaks[1].length; i++)
@@ -242,9 +265,23 @@ function Apply(image, sequence)
             ];
         }
 
-        peaks[1].sort(function(a, b){
-            return a[0]-b[0]
-        });
+        if(peaks[0].length > 1)
+        {
+            peaks[0].sort(function(a, b){
+                return a[1]-b[1]
+            });
+
+            peaks[0] = [peaks[0][0]];
+        }
+
+        if(peaks[1].length > 1)
+        {
+            peaks[1].sort(function(a, b){
+                return a[0]-b[0]
+            });
+
+            peaks[1] = [peaks[1][0]];
+        }
 
         HoughTransform.ShowHoughCircle(ctxs[sequence], ctxs[sequence], segments[0], peaks[0], radius);
         HoughTransform.ShowHoughLines(ctxs[sequence], ctxs[sequence], segments[1], peaks[1]);

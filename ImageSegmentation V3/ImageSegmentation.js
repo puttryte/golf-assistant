@@ -49,7 +49,7 @@ function main()
     }
 
     //set the default value of the drop selection
-    mySelect.value = 7;
+    mySelect.value = 6;
 
     //declare a behavior of the apply button
     document.getElementById("applybtn").addEventListener('click', Apply);
