@@ -4,7 +4,8 @@ import React, { useEffect } from 'react';
 import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
-import { CameraPreviewOptions } from '@capacitor-community/camera-preview';
+import { CameraPreviewOptions, CameraSampleOptions } from '@capacitor-community/camera-preview';
+
 // import LoadingComponent from './LoadingComponent'
 import {Modal} from 'antd';
 import 'antd/dist/antd.css';
@@ -22,6 +23,11 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     const [result, setResult] = useState([]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const cameraSampleOptions: CameraSampleOptions = {
+        quality: 50
+    };
+
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -60,7 +66,8 @@ const RecordContainer: React.FC<ContainerProps> = () => {
     const takePicture = async () => {
         await timeout(2000);
         for (let i = 0; i < 30; i++) {
-            tempResult[i] = await Plugins.CameraPreview.capture();
+            //tempResult[i] = await Plugins.CameraPreview.capture();
+            tempResult[i] = await Plugins.CameraPreview.captureSample(cameraSampleOptions);
             tempResult[i].value = window.btoa(tempResult[i].value);
             //console.log(i + ' data:image/jpeg;base64,' + window.atob(tempResult[i].value));
             tempResult[i] = ('data:image/jpeg;base64,' + window.atob(tempResult[i].value) + '|');
