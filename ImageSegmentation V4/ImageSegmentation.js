@@ -148,13 +148,14 @@ function outputResultsandAnalysis(ballInfo, putterInfo, prevFrameInfo)
     }
 
     console.log("\nPutter's Coordinates => X: " + putterXCoor + " Y: " + putterYCoor);
-    console.log("Putter's Angle => " + (putterAngle - 0) + "\xB0");
 
     distance = prevPutterYCoor - putterYCoor;
     relativeSpeed = distance / putterThickness;
     realSpeed = (relativeSpeed * stdThickness) / timeInterval;
     realSpeed = Math.round(realSpeed * 100) / 100;
     console.log("Putter's Speed => " + realSpeed + " inches / second");
+
+    console.log("Putter's Angle => " + putterAngle + "\xB0");
 }
 
 //fuction gets trigger when the apply button is pressed.
