@@ -45,11 +45,19 @@ export default class Color
         let blue_p = blue/255;
 
         let colorMax = Math.max(red_p, green_p, blue_p);
-        let colorMin = Math.min(red_p, green_p, blue_p);
+        let colorMin= Math.min(red_p, green_p, blue_p);
         let colorDelta = colorMax - colorMin;
 
         value = colorMax;
-        saturation = colorMax == 0 ? 0 : colorDelta / colorMax;
+
+        if(colorMax == 0)
+        {
+            saturation = 0;
+        }
+        else
+        {
+            saturation = colorDelta / colorMax;
+        }
 
         if(colorDelta == 0)
         {
@@ -93,7 +101,14 @@ export default class Color
     //source: https://www.rapidtables.com/convert/color/hsv-to-rgb.html
     static HSVtoRGB(hue, saturation, value)
     {
-        hue %= 360;
+        if(hue < 0)
+        {
+            hue += 360;
+        }
+        else if(hue > 360)
+        {
+            hue -= 360;
+        }
 
         let c = value * saturation;
         let x = c * (1 - Math.abs(((hue / 60) % 2) - 1))
