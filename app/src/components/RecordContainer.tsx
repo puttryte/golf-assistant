@@ -5,6 +5,7 @@ import {useState} from 'react';
 import {IonButton, IonIcon, IonSelectPopover} from '@ionic/react';
 import { Plugins } from "@capacitor/core"
 import { CameraPreviewOptions, CameraSampleOptions } from '@capacitor-community/camera-preview';
+import PlaySound from './PlaySound';
 
 // import LoadingComponent from './LoadingComponent'
 import {Modal} from 'antd';
@@ -118,6 +119,7 @@ const RecordContainer: React.FC<ContainerProps> = () => {
                   <IonIcon icon={arrowForward} />
                   NEXT
               </IonButton>
+              <PlaySound></PlaySound>
 
           </div>
       </div>
